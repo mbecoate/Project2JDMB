@@ -11,6 +11,14 @@ V1subnet_address  = ["10.0.1.0/24"]
 V1Bastionsubnet   = "AzureBastionSubnet"
 V1Bastionsubnet2_address = ["10.0.2.0/24"]
 
+
+#VMSS 
+Vnet1WebVM = "V1WebVMSS"
+VMComputername = "V1webComputer"
+
+
+
+
 tags = {
   "Name" = "test",
   "team" = "dev"

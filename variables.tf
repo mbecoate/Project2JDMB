@@ -29,6 +29,20 @@ variable "V1Bastionsubnet" {
 variable "V1Bastionsubnet2_address" {
   type = list(string)
 }
+
+
+#VMSS Variables
+
+variable "Vnet1WebVM" {
+  type = string
+}
+variable "VMComputername" {
+  type = string
+}
+
+
+
+
 variable "tags" {
   type = map(string)
 }
@@ -83,9 +97,7 @@ variable "linux1_create_option" {
 variable "linux1_managed_disk_type" {
   type = string
 }
-variable "linux1_os_profile_computer_name" {
-  type = string
-}
+
 variable "secret_vault_name" {
   type = string
 }
