@@ -78,7 +78,7 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSReference" {
       primary                                = true
       subnet_id                              = azurerm_subnet.VNet1Subnet.id
       load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V1Pbpepool1.id]
-      load_balancer_inbound_nat_rules_ids    = [azurerm_lb_nat_pool.V1Plbnatpool1.id, azurerm_lb_nat_pool.V1Plbnatpool2.id, azurerm_lb_nat_pool.V1Plbnatpool3.id]
+      load_balancer_inbound_nat_rules_ids    = []
     }
   }
 
@@ -115,38 +115,36 @@ resource "azurerm_lb_backend_address_pool" "V1Pbpepool1" {
   name                = "V1PBackEndAddressPool1"
 }
 
-resource "azurerm_lb_nat_pool" "V1Plbnatpool1" {
+resource "azurerm_lb_rule" "V1lbrule1" {
   resource_group_name            = azurerm_resource_group.RG.name
-  name                           = "ssh"
   loadbalancer_id                = azurerm_lb.V1toWebLB.id
+  name                           = "ssh"
   protocol                       = "Tcp"
-  frontend_port_start            = 50000
-  frontend_port_end              = 50119
+  frontend_port                  = 22
   backend_port                   = 22
   frontend_ip_configuration_name = "PublicIPAddress1"
 }
 
-resource "azurerm_lb_nat_pool" "V1Plbnatpool2" {
+resource "azurerm_lb_rule" "V1lbrule2" {
   resource_group_name            = azurerm_resource_group.RG.name
-  name                           = "web"
   loadbalancer_id                = azurerm_lb.V1toWebLB.id
+  name                           = "sql"
   protocol                       = "Tcp"
-  frontend_port_start            = 51000
-  frontend_port_end              = 51119
+  frontend_port                  = 1433
+  backend_port                   = 1433
+  frontend_ip_configuration_name = "PublicIPAddress1"
+}
+
+resource "azurerm_lb_rule" "V1lbrule3" {
+  resource_group_name            = azurerm_resource_group.RG.name
+  loadbalancer_id                = azurerm_lb.V1toWebLB.id
+  name                           = "web"
+  protocol                       = "Tcp"
+  frontend_port                  = 80
   backend_port                   = 80
   frontend_ip_configuration_name = "PublicIPAddress1"
 }
 
-resource "azurerm_lb_nat_pool" "V1Plbnatpool3" {
-  resource_group_name            = azurerm_resource_group.RG.name
-  name                           = "SQL"
-  loadbalancer_id                = azurerm_lb.V1toWebLB.id
-  protocol                       = "Tcp"
-  frontend_port_start            = 52000
-  frontend_port_end              = 52119
-  backend_port                   = 1433
-  frontend_ip_configuration_name = "PublicIPAddress1"
-}
 
 resource "azurerm_lb_probe" "V1PHealthProbe1" {
   resource_group_name = azurerm_resource_group.RG.name
@@ -180,36 +178,31 @@ resource "azurerm_lb_backend_address_pool" "V1bpepool1" {
   name                = "V1BackEndAddressPool1"
 }
 
-resource "azurerm_lb_nat_pool" "V1lbnatpool1" {
+resource "azurerm_lb_rule" "V1webtobuslbrule1" {
   resource_group_name            = azurerm_resource_group.RG.name
-  name                           = "ssh"
   loadbalancer_id                = azurerm_lb.V1WebtoBusinessLB.id
+  name                           = "ssh"
   protocol                       = "Tcp"
-  frontend_port_start            = 22
-  frontend_port_end              = 22
+  frontend_port                  = 22
   backend_port                   = 22
   frontend_ip_configuration_name = "PrivateIPAddress1"
 }
-
-resource "azurerm_lb_nat_pool" "V1lbnatpool2" {
+resource "azurerm_lb_rule" "V1webtobuslbrule2" {
   resource_group_name            = azurerm_resource_group.RG.name
-  name                           = "web"
   loadbalancer_id                = azurerm_lb.V1WebtoBusinessLB.id
+  name                           = "sql"
   protocol                       = "Tcp"
-  frontend_port_start            = 80
-  frontend_port_end              = 80
-  backend_port                   = 80
+  frontend_port                  = 1433
+  backend_port                   = 1433
   frontend_ip_configuration_name = "PrivateIPAddress1"
 }
-
-resource "azurerm_lb_nat_pool" "V1lbnatpool3" {
+resource "azurerm_lb_rule" "V1webtobuslbrule3" {
   resource_group_name            = azurerm_resource_group.RG.name
-  name                           = "SQL"
   loadbalancer_id                = azurerm_lb.V1WebtoBusinessLB.id
+  name                           = "web"
   protocol                       = "Tcp"
-  frontend_port_start            = 1433
-  frontend_port_end              = 1433
-  backend_port                   = 1433
+  frontend_port                  = 80
+  backend_port                   = 80
   frontend_ip_configuration_name = "PrivateIPAddress1"
 }
 
@@ -244,16 +237,14 @@ resource "azurerm_lb_backend_address_pool" "V1bpepool2" {
   name                = "V1BackEndAddressPool2"
 }
 
-resource "azurerm_lb_nat_pool" "V1lbnatpool4" {
+resource "azurerm_lb_rule" "V1bustosqllbrule1" {
   resource_group_name            = azurerm_resource_group.RG.name
-  name                           = "SQL"
   loadbalancer_id                = azurerm_lb.V1WebtoBusinessLB2.id
+  name                           = "sql"
   protocol                       = "Tcp"
-  frontend_port_start            = 1433
-  frontend_port_end              = 1433
+  frontend_port                  = 1433
   backend_port                   = 1433
   frontend_ip_configuration_name = "PrivateIPAddress2"
-  floating_ip_enabled            = true
 }
 
 resource "azurerm_lb_probe" "V1HealthProbe2" {
