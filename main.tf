@@ -31,7 +31,7 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSReference" {
   name                = var.Vnet1WebVM
   location            = azurerm_resource_group.RG.location
   resource_group_name = azurerm_resource_group.RG.name
-
+  upgrade_policy_mode = "Manual"
 
   sku {
     name     = "Standard_F2"
