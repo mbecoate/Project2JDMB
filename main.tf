@@ -65,7 +65,7 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSReference" {
   os_profile {
     computer_name_prefix = var.VMComputername
     admin_username       = "azureuser"
-    admin_password = ""
+    admin_password = "Adminpassword*"
   }
 
 
