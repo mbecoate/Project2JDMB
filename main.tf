@@ -256,7 +256,7 @@ resource "azurerm_lb_nat_pool" "V1lbnatpool4" {
   floating_ip_enabled            = true
 }
 
-resource "azurerm_lb_probe" "V1HealthProbe1" {
+resource "azurerm_lb_probe" "V1HealthProbe2" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V1WebtoBusinessLB2.id
   name                = "http-probe"
