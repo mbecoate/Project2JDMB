@@ -120,8 +120,8 @@ resource "azurerm_lb_nat_pool" "V1Plbnatpool1" {
   name                           = "ssh"
   loadbalancer_id                = azurerm_lb.V1toWebLB.id
   protocol                       = "Tcp"
-  frontend_port_start            = 50000
-  frontend_port_end              = 50119
+  frontend_port_start            = 22
+  frontend_port_end              = 23
   backend_port                   = 22
   frontend_ip_configuration_name = "PublicIPAddress1"
 }
@@ -131,8 +131,8 @@ resource "azurerm_lb_nat_pool" "V1Plbnatpool2" {
   name                           = "web"
   loadbalancer_id                = azurerm_lb.V1toWebLB.id
   protocol                       = "Tcp"
-  frontend_port_start            = 50000
-  frontend_port_end              = 50119
+  frontend_port_start            = 80
+  frontend_port_end              = 81
   backend_port                   = 80
   frontend_ip_configuration_name = "PublicIPAddress1"
 }
@@ -142,8 +142,8 @@ resource "azurerm_lb_nat_pool" "V1Plbnatpool3" {
   name                           = "SQL"
   loadbalancer_id                = azurerm_lb.V1toWebLB.id
   protocol                       = "Tcp"
-  frontend_port_start            = 50000
-  frontend_port_end              = 50119
+  frontend_port_start            = 1433
+  frontend_port_end              = 1434
   backend_port                   = 1433
   frontend_ip_configuration_name = "PublicIPAddress1"
 }
