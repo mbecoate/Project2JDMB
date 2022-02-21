@@ -77,8 +77,8 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSReference" {
       name                                   = "V1WebIPConfiguration"
       primary                                = true
       subnet_id                              = azurerm_subnet.VNet1Subnet.id
-      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.bpepool.id]
-      load_balancer_inbound_nat_rules_ids    = [azurerm_lb_nat_pool.lbnatpool.id]
+      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V1Pbpepool1.id]
+      load_balancer_inbound_nat_rules_ids    = [azurerm_lb_nat_pool.V1Plbnatpool1.id, azurerm_lb_nat_pool.V1Plbnatpool2.id, azurerm_lb_nat_pool.V1Plbnatpool3.id]
     }
   }
 
