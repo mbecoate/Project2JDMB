@@ -1,6 +1,7 @@
 resource "azurerm_resource_group" "RG" {
   name     = var.rg_name
   location = var.location
+
 }
 
 #VNet1
@@ -168,7 +169,7 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSWeb" {
   }
 }
 
-# VMSS Web
+# VMSS Business
 resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
   name                = var.Vnet1businessVM
   location            = azurerm_resource_group.RG.location
