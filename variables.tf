@@ -16,17 +16,34 @@ variable "Vnet1network_name" {
 variable "address_space" {
   type = list(string)
 }
-variable "V1subnet1" {
+variable "v1subnetweb" {
   type = string
 }
-variable "V1subnet_address" {
+
+variable "v1subnetweb_address" {
+  type = list(string)
+}
+
+variable "v1subnetbusiness" {
+  type = string
+}
+
+variable "v1subnetbusiness_address" {
+  type = list(string)
+}
+
+variable "v1subnetsql" {
+  type = string
+}
+
+variable "v1subnetsql_address" {
   type = list(string)
 }
 
 variable "V1Bastionsubnet" {
   type = string
 }
-variable "V1Bastionsubnet2_address" {
+variable "V1Bastionsubnet1_address" {
   type = list(string)
 }
 

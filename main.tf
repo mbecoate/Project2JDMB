@@ -12,20 +12,33 @@ resource "azurerm_virtual_network" "Vnet1" {
   resource_group_name = azurerm_resource_group.RG.name
 }
 
-resource "azurerm_subnet" "VNet1Subnet" {
-  name                 = var.V1subnet1
-  resource_group_name  = azurerm_resource_group.RG.name
-  virtual_network_name = azurerm_virtual_network.Vnet1.name
-  address_prefixes     = var.V1subnet_address
-}
-
 resource "azurerm_subnet" "Bastionsubnet" {
   name                 = var.V1Bastionsubnet
   resource_group_name  = azurerm_resource_group.RG.name
   virtual_network_name = azurerm_virtual_network.Vnet1.name
-  address_prefixes     = var.V1Bastionsubnet2_address
+  address_prefixes     = var.V1Bastionsubnet1_address
 }
 
+resource "azurerm_subnet" "VNet1Subnetweb" {
+  name                 = var.v1subnetweb
+  resource_group_name  = azurerm_resource_group.RG.name
+  virtual_network_name = azurerm_virtual_network.Vnet1.name
+  address_prefixes     = var.v1subnetweb_address
+}
+
+resource "azurerm_subnet" "VNet1SubnetBusiness" {
+  name                 = var.v1subnetbusiness
+  resource_group_name  = azurerm_resource_group.RG.name
+  virtual_network_name = azurerm_virtual_network.Vnet1.name
+  address_prefixes     = var.v1subnetbusiness_address
+}
+
+resource "azurerm_subnet" "VNet1subnetsql" {
+  name                 = var.v1subnetsql
+  resource_group_name  = azurerm_resource_group.RG.name
+  virtual_network_name = azurerm_virtual_network.Vnet1.name
+  address_prefixes     = var.v1subnetsql_address
+}
 
 #traffic manager
 
@@ -144,7 +157,7 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSReference" {
     ip_configuration {
       name                                   = "V1WebIPConfiguration"
       primary                                = true
-      subnet_id                              = azurerm_subnet.VNet1Subnet.id
+      subnet_id                              = azurerm_subnet.VNet1Subnetweb.id
       load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V1Pbpepool1.id]
       load_balancer_inbound_nat_rules_ids    = []
     }

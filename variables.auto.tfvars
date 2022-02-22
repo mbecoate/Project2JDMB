@@ -6,10 +6,15 @@ location = "eastus"
 network_NSG     = "Network_security_Group"
 Vnet1network_name    = "Hub_network"
 address_space   = ["10.0.0.0/16"]
-V1subnet1         = "V1subnet"
-V1subnet_address  = ["10.0.1.0/24"]
 V1Bastionsubnet   = "AzureBastionSubnet"
-V1Bastionsubnet2_address = ["10.0.2.0/24"]
+V1Bastionsubnet1_address = ["10.0.1.0/24"]
+v1subnetweb         = "V1subnetweb"
+v1subnetweb_address  = ["10.0.2.0/24"]
+v1subnetbusiness = "v1subnetbusiness"
+v1subnetbusiness_address = ["10.0.3.0/24"]
+v1subnetsql = "v1subnetsql"
+v1subnetsql_address = ["10.0.4.0/24"]
+
 
 
 #VMSS 
