@@ -43,13 +43,14 @@ resource "azurerm_subnet" "VNet1subnetsql" {
 
 #traffic manager
 
-resource "azurerm_traffic_manager_profile" "T-M" {
-  name                   = "T-M-profile"
+resource "azurerm_traffic_manager_profile" "t_m" {
+  name                   = "t_m_profile"
   resource_group_name    = azurerm_resource_group.RG.name
+  
   traffic_routing_method = "Priority"
 
   dns_config {
-    relative_name = "T-M-profile"
+    relative_name = "t_m_profile"
     ttl           = 100
   }
 
@@ -64,21 +65,22 @@ resource "azurerm_traffic_manager_profile" "T-M" {
 
 }
 
-resource "azurerm_traffic_manager_endpoint" "EP1" {
-  name               = "lb1-endpoint"
-  profile_name         = azurerm_traffic_manager_profile.T-M.name
+resource "azurerm_traffic_manager_azure_endpoint" "ep1_external_endpoint" {
+  name               = "lb1-external-endpoint"
+  profile_id         = azurerm_traffic_manager_profile.t_m.id
   target_resource_id = azurerm_public_ip.V1toWebPIP.id
   priority            = 1
 }
 
+/*
 #fix me for 2nd vnet
-resource "azurerm_traffic_manager_endpoint" "EP2" {
+resource "azurerm_traffic_manager_azure_endpoint" "ep2" {
   name               = "lb2-endpoint"
   profile_name         = azurerm_traffic_manager_profile.T-M.name
   target_resource_id = azurerm_public_ip.V1toWebPIP.id
   priority            = 2
 }
-
+*/
 
 #------------------------------------------------
 #Bastion Subnet
