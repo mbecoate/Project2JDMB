@@ -63,6 +63,33 @@ resource "azurerm_traffic_manager_azure_endpoint" "EP2" {
 }
 
 
+#------------------------------------------------
+#Bastion Subnet
+#------------------------------------------------
+
+resource "azurerm_public_ip" "BastionPIP" {
+  name                = "BPIP"
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_bastion_host" "BastionHost" {
+  name                = "B1Host"
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+
+  ip_configuration {
+    name                 = "configuration"
+    subnet_id            = azurerm_subnet.Bastionsubnet.id
+    public_ip_address_id = azurerm_public_ip.BastionPIP.id
+  }
+}
+
+#------------------------------------------------
+#Bastion Subnet
+#------------------------------------------------
 
 # VMSS 
 resource "azurerm_virtual_machine_scale_set" "V1VMSSReference" {
