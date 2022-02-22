@@ -26,6 +26,44 @@ resource "azurerm_subnet" "Bastionsubnet" {
   address_prefixes     = var.V1Bastionsubnet2_address
 }
 
+
+#traffic manager
+resource "azurerm_traffic_manager_profile" "TM" {
+  name                   = "TM-profile"
+  resource_group_name    = azurerm_resource_group.RG.name
+  traffic_routing_method = "Priority"
+
+  dns_config {
+    relative_name = "TM-profile"
+    ttl           = 100
+  }
+
+  monitor_config {
+    protocol                     = "http"
+    port                         = 80
+    path                         = "/"
+    interval_in_seconds          = 30
+    timeout_in_seconds           = 9
+    tolerated_number_of_failures = 3
+  }
+
+}
+
+resource "azurerm_traffic_manager_azure_endpoint" "EP1" {
+  name               = "lb1-endpoint"
+  profile_id         = azurerm_traffic_manager_profile.TM.id
+  target_resource_id = azurerm_public_ip.V1toWebPIP.id
+  priority            = 1
+}
+resource "azurerm_traffic_manager_azure_endpoint" "EP2" {
+  name               = "lb1-endpoint"
+  profile_id         = azurerm_traffic_manager_profile.TM.id
+  target_resource_id = azurerm_public_ip.V1toWebPIP.id
+  priority            = 2
+}
+
+
+
 # VMSS 
 resource "azurerm_virtual_machine_scale_set" "V1VMSSReference" {
   name                = var.Vnet1WebVM
@@ -95,6 +133,7 @@ resource "azurerm_public_ip" "V1toWebPIP" {
   location            = "east US"
   resource_group_name = azurerm_resource_group.RG.name
   allocation_method   = "Static"
+  domain_name_label   = "LB1-public-ip"
 }
 
 resource "azurerm_lb" "V1toWebLB" {
