@@ -69,6 +69,7 @@ resource "azurerm_traffic_manager_azure_endpoint" "ep1_external_endpoint" {
   name               = "lb1-external-endpoint"
   profile_id         = azurerm_traffic_manager_profile.t_m.id
   target_resource_id = azurerm_public_ip.V1toWebPIP.id
+  weight             = 100
   priority            = 1
 }
 
@@ -78,6 +79,7 @@ resource "azurerm_traffic_manager_azure_endpoint" "ep2" {
   name               = "lb2-endpoint"
   profile_name         = azurerm_traffic_manager_profile.T-M.name
   target_resource_id = azurerm_public_ip.V1toWebPIP.id
+  weight             = 100
   priority            = 2
 }
 */
