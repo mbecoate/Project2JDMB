@@ -43,14 +43,14 @@ resource "azurerm_subnet" "VNet1subnetsql" {
 
 #traffic manager
 
-resource "azurerm_traffic_manager_profile" "t_m" {
-  name                   = "t_m_profile"
+resource "azurerm_traffic_manager_profile" "t8p2-tm" {
+  name                   = "t8p2-tm-profile"
   resource_group_name    = azurerm_resource_group.RG.name
   
   traffic_routing_method = "Priority"
 
   dns_config {
-    relative_name = "t_m_profile"
+    relative_name = "t8p2-tm-profile"
     ttl           = 100
   }
 
@@ -65,9 +65,9 @@ resource "azurerm_traffic_manager_profile" "t_m" {
 
 }
 
-resource "azurerm_traffic_manager_azure_endpoint" "ep1_external_endpoint" {
+resource "azurerm_traffic_manager_azure_endpoint" "ep1-external-endpoint" {
   name               = "lb1-external-endpoint"
-  profile_id         = azurerm_traffic_manager_profile.t_m.id
+  profile_id         = azurerm_traffic_manager_profile.t8p2-tm.id
   target_resource_id = azurerm_public_ip.V1toWebPIP.id
   weight             = 100
   priority            = 1
@@ -77,7 +77,7 @@ resource "azurerm_traffic_manager_azure_endpoint" "ep1_external_endpoint" {
 #fix me for 2nd vnet
 resource "azurerm_traffic_manager_azure_endpoint" "ep2" {
   name               = "lb2-endpoint"
-  profile_name         = azurerm_traffic_manager_profile.T-M.name
+  profile_name         = azurerm_traffic_manager_profile.t8p2-tm.name
   target_resource_id = azurerm_public_ip.V1toWebPIP.id
   weight             = 100
   priority            = 2
