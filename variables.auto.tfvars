@@ -4,16 +4,26 @@ location = "eastus"
 
 #Networking Variables
 network_NSG     = "Network_security_Group"
-Vnet1network_name    = "Hub_network"
+Vnet1network_name    = "primary"
+Vnet2network_name = "secondary"
 address_space   = ["10.0.0.0/16"]
+address_space2 = ["10.1.0.0/16"]
 V1Bastionsubnet   = "AzureBastionSubnet"
 V1Bastionsubnet1_address = ["10.0.1.0/24"]
+V2Bastionsubnet   = "AzureBastionSubnet2"
+V2Bastionsubnet1_address = ["10.1.1.0/24"]
 v1subnetweb         = "V1subnetweb"
 v1subnetweb_address  = ["10.0.2.0/24"]
+v2subnetweb = "v2subnetweb"
+v2subnetweb_address = ["10.1.2.0/24"]
 v1subnetbusiness = "v1subnetbusiness"
 v1subnetbusiness_address = ["10.0.3.0/24"]
+v2subnetbusiness = "v2subnetbusiness"
+v2subnetbusiness_address = ["10.1.3.0/24"]
 v1subnetsql = "v1subnetsql"
 v1subnetsql_address = ["10.0.4.0/24"]
+v2subnetsql = "v2subnetsql"
+v2subnetsql_address = ["10.1.4.0/24"]
 
 
 
@@ -22,6 +32,10 @@ Vnet1WebVM = "V1WebVMSS"
 VMwebComputername = "V1webComputer"
 Vnet1businessVM = "V1businessVMSS"
 VMbusinessComputername = "V1businesscomputer"
+Vnet2WebVM = "V2WebVMSS"
+VM2webComputername = "V2webComputer"
+Vnet2businessVM = "V2businessVMSS"
+VM2businessComputername = "V2businesscomputer"
 
 
 

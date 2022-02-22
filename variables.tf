@@ -13,30 +13,54 @@ variable "network_NSG" {
 variable "Vnet1network_name" {
   type = string
 }
+variable "Vnet2network_name" {
+  type = string
+}
 variable "address_space" {
   type = list(string)
 }
+variable "address_space2" {
+  type = list(string)
+}
 variable "v1subnetweb" {
+  type = string
+}
+variable "v2subnetweb" {
   type = string
 }
 
 variable "v1subnetweb_address" {
   type = list(string)
 }
+variable "v2subnetweb_address" {
+  type = list(string)
+}
 
 variable "v1subnetbusiness" {
+  type = string
+}
+variable "v2subnetbusiness" {
   type = string
 }
 
 variable "v1subnetbusiness_address" {
   type = list(string)
 }
+variable "v2subnetbusiness_address" {
+  type = list(string)
+}
 
 variable "v1subnetsql" {
   type = string
 }
+variable "v2subnetsql" {
+  type = string
+}
 
 variable "v1subnetsql_address" {
+  type = list(string)
+}
+variable "v2subnetsql_address" {
   type = list(string)
 }
 
@@ -44,6 +68,13 @@ variable "V1Bastionsubnet" {
   type = string
 }
 variable "V1Bastionsubnet1_address" {
+  type = list(string)
+}
+
+variable "V2Bastionsubnet" {
+  type = string
+}
+variable "V2Bastionsubnet1_address" {
   type = list(string)
 }
 
@@ -61,6 +92,20 @@ variable "Vnet1businessVM" {
   type = string
 }
 variable "VMbusinessComputername" {
+  type = string
+}
+
+variable "Vnet2WebVM" {
+  type = string
+}
+variable "VM2webComputername" {
+  type = string
+}
+
+variable "Vnet2businessVM" {
+  type = string
+}
+variable "VM2businessComputername" {
   type = string
 }
 
@@ -95,30 +140,6 @@ variable "security_rule_source_address_prefix" {
   type = string
 }
 variable "security_rule_destination_address_prefix" {
-  type = string
-}
-variable "linux1_pip_allocation_method" {
-  type = string
-}
-variable "linux1_publisher" {
-  type = string
-}
-variable "linux1_offer" {
-  type = string
-}
-variable "linux1_sku" {
-  type = string
-}
-variable "linux1_version" {
-  type = string
-}
-variable "linux1_storage_os_disk_caching" {
-  type = string
-}
-variable "linux1_create_option" {
-  type = string
-}
-variable "linux1_managed_disk_type" {
   type = string
 }
 
