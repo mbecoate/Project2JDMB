@@ -53,7 +53,14 @@ variable "V1Bastionsubnet1_address" {
 variable "Vnet1WebVM" {
   type = string
 }
-variable "VMComputername" {
+variable "VMwebComputername" {
+  type = string
+}
+
+variable "Vnet1businessVM" {
+  type = string
+}
+variable "VMbusinessComputername" {
   type = string
 }
 

@@ -19,7 +19,9 @@ v1subnetsql_address = ["10.0.4.0/24"]
 
 #VMSS 
 Vnet1WebVM = "V1WebVMSS"
-VMComputername = "V1webComputer"
+VMwebComputername = "V1webComputer"
+Vnet1businessVM = "V1businessVMSS"
+VMbusinessComputername = "V1businesscomputer"
 
 
 

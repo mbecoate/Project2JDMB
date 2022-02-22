@@ -104,11 +104,11 @@ resource "azurerm_bastion_host" "BastionHost" {
 }
 
 #------------------------------------------------
-#Bastion Subnet
+#Virtual Machine Scale Sets
 #------------------------------------------------
 
-# VMSS 
-resource "azurerm_virtual_machine_scale_set" "V1VMSSReference" {
+# VMSS Web
+resource "azurerm_virtual_machine_scale_set" "V1VMSSWeb" {
   name                = var.Vnet1WebVM
   location            = azurerm_resource_group.RG.location
   resource_group_name = azurerm_resource_group.RG.name
@@ -144,7 +144,7 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSReference" {
 
 
   os_profile {
-    computer_name_prefix = var.VMComputername
+    computer_name_prefix = var.VMwebComputername
     admin_username       = "azureuser"
     admin_password = "Adminpassword*"
   }
@@ -167,6 +167,68 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSReference" {
     environment = "JDMB"
   }
 }
+
+# VMSS Web
+resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
+  name                = var.Vnet1businessVM
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+  upgrade_policy_mode = "Manual"
+
+  sku {
+    name     = "Standard_F2"
+    tier     = "Standard"
+    capacity = 3
+  }
+
+  storage_profile_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "16.04-LTS"
+    version   = "latest"
+  }
+
+  storage_profile_os_disk {
+    name              = ""
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+  }
+
+  storage_profile_data_disk {
+    lun           = 0
+    caching       = "ReadWrite"
+    create_option = "Empty"
+    disk_size_gb  = 10
+  }
+
+
+
+  os_profile {
+    computer_name_prefix = var.VMbusinessComputername
+    admin_username       = "azureuser"
+    admin_password = "Adminpassword*"
+  }
+
+
+  network_profile {
+    name    = "terraformnetworkprofile1"
+    primary = true
+
+    ip_configuration {
+      name                                   = "V1BusinessIPConfiguration"
+      primary                                = true
+      subnet_id                              = azurerm_subnet.VNet1SubnetBusiness.id
+      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V1Pbpepool1.id]
+      load_balancer_inbound_nat_rules_ids    = []
+    }
+  }
+
+  tags = {
+    environment = "JDMB"
+  }
+}
+
 
 
 #We want to make our Load Balancer Public to go to our Web Tier VMSS
