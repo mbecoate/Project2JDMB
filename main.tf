@@ -219,7 +219,7 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
       name                                   = "V1BusinessIPConfiguration"
       primary                                = true
       subnet_id                              = azurerm_subnet.VNet1SubnetBusiness.id
-      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V1Pbpepool1.id]
+      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V1bpepool2.id]
       load_balancer_inbound_nat_rules_ids    = []
     }
   }
@@ -300,7 +300,7 @@ resource "azurerm_lb_probe" "V1PHealthProbe1" {
 }
 
 
-/*
+
 #We want to make our Load Balancer Internal (Private) to go to our Busines Tier VMSS
 resource "azurerm_lb" "V1WebtoBusinessLB" {
   name                = "V1WbLB"
@@ -309,8 +309,8 @@ resource "azurerm_lb" "V1WebtoBusinessLB" {
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress1"
-    subnet_id = azurerm_subnet.VNet1Subnet.id
-    private_ip_address = "10.0.0.6"
+    subnet_id = azurerm_subnet.VNet1SubnetBusiness.id
+    private_ip_address = "10.0.3.6"
     private_ip_address_allocation = "static"
     private_ip_address_version = "IPv4"
   }
@@ -359,7 +359,7 @@ resource "azurerm_lb_probe" "V1HealthProbe2" {
   port                = 80
 }
 
-
+/*
 #We want to make our Load Balancer Internal (Private) to go to our SQL database
 resource "azurerm_lb" "V1WebtoBusinessLB2" {
   name                = "V1WbLB2"
