@@ -239,7 +239,7 @@ resource "azurerm_public_ip" "V1toWebPIP" {
   location            = "east US"
   resource_group_name = azurerm_resource_group.RG.name
   allocation_method   = "Static"
-  domain_name_label   = "LB1-public-ip"
+  domain_name_label   = "lb1-public-ip"
 }
 
 resource "azurerm_lb" "V1toWebLB" {
