@@ -324,7 +324,7 @@ resource "azurerm_lb" "V1WebtoBusinessLB" {
 resource "azurerm_lb_backend_address_pool" "V1bpepool2" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V1WebtoBusinessLB.id
-  name                = "V1BackEndAddressPool1"
+  name                = "V1BackEndAddressPool2"
 }
 
 resource "azurerm_lb_rule" "V1webtobuslbrule1" {
@@ -364,17 +364,17 @@ resource "azurerm_lb_probe" "V1HealthProbe2" {
   port                = 80
 }
 
-/*
+
 #We want to make our Load Balancer Internal (Private) to go to our SQL database
-resource "azurerm_lb" "V1WebtoBusinessLB2" {
-  name                = "V1WbLB2"
+resource "azurerm_lb" "V1BusinesstoSQLLB2" {
+  name                = "V1BSQlLB2"
   location            = azurerm_resource_group.RG.location
   resource_group_name = azurerm_resource_group.RG.name
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress2"
-    subnet_id = azurerm_subnet.VNet1Subnet.id
-    private_ip_address = "10.0.0.2"
+    subnet_id = azurerm_subnet.VNet1subnetsql.id
+    private_ip_address = "10.0.4.6"
     private_ip_address_allocation = "static"
     private_ip_address_version = "IPv4"
   }
@@ -382,13 +382,13 @@ resource "azurerm_lb" "V1WebtoBusinessLB2" {
 
 resource "azurerm_lb_backend_address_pool" "V1bpepool3" {
   resource_group_name = azurerm_resource_group.RG.name
-  loadbalancer_id     = azurerm_lb.V1WebtoBusinessLB2.id
+  loadbalancer_id     = azurerm_lb.V1BusinesstoSQLLB2.id
   name                = "V1BackEndAddressPool3"
 }
 
 resource "azurerm_lb_rule" "V1bustosqllbrule1" {
   resource_group_name            = azurerm_resource_group.RG.name
-  loadbalancer_id                = azurerm_lb.V1WebtoBusinessLB2.id
+  loadbalancer_id                = azurerm_lb.V1BusinesstoSQLLB2.id
   name                           = "sql"
   protocol                       = "Tcp"
   frontend_port                  = 1433
@@ -398,11 +398,11 @@ resource "azurerm_lb_rule" "V1bustosqllbrule1" {
 
 resource "azurerm_lb_probe" "V1HealthProbe3" {
   resource_group_name = azurerm_resource_group.RG.name
-  loadbalancer_id     = azurerm_lb.V1WebtoBusinessLB2.id
+  loadbalancer_id     = azurerm_lb.V1BusinesstoSQLLB2.id
   name                = "http-probe"
   protocol            = "Http"
   request_path        = "/health"
   port                = 80
 }
-*/
+
 
