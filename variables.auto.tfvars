@@ -41,9 +41,10 @@ VM2businessComputername = "V2businesscomputer"
 
 
 tags = {
-  "Name" = "test",
-  "team" = "dev"
+  Name = "JDMB",
+  team = "Team8"
 }
+
 #VM Variables
 
 #PIP
