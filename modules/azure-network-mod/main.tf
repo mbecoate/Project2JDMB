@@ -9,19 +9,13 @@ resource "azurerm_virtual_network" "Vnet1" {
   tags = var.tags
 }
 
-resource "azurerm_subnet" "Bastionsubnet" {
+resource "azurerm_subnet" "Bastionsubnet1" {
   name                 = var.V1Bastionsubnet
   resource_group_name  = var.rg
   virtual_network_name = azurerm_virtual_network.Vnet1.name
   address_prefixes     = var.V1Bastionsubnet1_address
 }
 
-resource "azurerm_subnet" "VNet1Subnetweb" {
-  name                 = var.v1subnetweb
-  resource_group_name  = var.rg
-  virtual_network_name = azurerm_virtual_network.Vnet1.name
-  address_prefixes     = var.v1subnetweb_address
-}
 
 resource "azurerm_subnet" "VNet1SubnetBusiness" {
   name                 = var.v1subnetbusiness
@@ -56,12 +50,6 @@ resource "azurerm_subnet" "Bastionsubnet2" {
   address_prefixes     = var.V2Bastionsubnet1_address
 }
 
-resource "azurerm_subnet" "VNet2Subnetweb" {
-  name                 = var.v2subnetweb
-  resource_group_name  = var.rg
-  virtual_network_name = azurerm_virtual_network.Vnet2.name
-  address_prefixes     = var.v2subnetweb_address
-}
 
 resource "azurerm_subnet" "VNet2SubnetBusiness" {
   name                 = var.v2subnetbusiness

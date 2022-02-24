@@ -27,24 +27,6 @@ variable "vnet2location" {
 }
 
 
-variable "V1Bastionsubnet" {
-  type = string
-  default = "V1Bastionsubnet"
-}
-variable "V1Bastionsubnet1_address" {
-  type = list(string)
-  default = [ "10.0.1.0/16" ]
-}
-variable "V2Bastionsubnet" {
-  type = string
-  default = "V2Bastionsubnet"
-}
-variable "V2Bastionsubnet1_address" {
-  type = list(string)
-  default = [ "10.1.1.0/16" ]
-}
-
-
 variable "Vnet1network_name" {
   type = string
   default = "Vnet1network_name"
@@ -60,6 +42,24 @@ variable "address_space" {
 variable "address_space2" {
   type = list(string)
   default = ["10.1.0.0/16"]
+}
+
+
+variable "V1Bastionsubnet" {
+  type = string
+  default = "V1Bastionsubnet"
+}
+variable "V1Bastionsubnet1_address" {
+  type = list(string)
+  default = [ "10.0.1.0/16" ]
+}
+variable "V2Bastionsubnet" {
+  type = string
+  default = "V2Bastionsubnet"
+}
+variable "V2Bastionsubnet1_address" {
+  type = list(string)
+  default = [ "10.1.1.0/16" ]
 }
 
 
