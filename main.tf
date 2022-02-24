@@ -4,54 +4,16 @@ resource "azurerm_resource_group" "RG" {
   tags = var.tags
 }
 
-/*
-#look at modules
-#VNet1
-resource "azurerm_virtual_network" "Vnet1" {
-  name                = var.Vnet1network_name
-  address_space       = var.address_space
-  location            = azurerm_resource_group.RG.location
-  resource_group_name = azurerm_resource_group.RG.name
-}
 
-resource "azurerm_subnet" "Bastionsubnet" {
-  name                 = var.V1Bastionsubnet
-  resource_group_name  = azurerm_resource_group.RG.name
-  virtual_network_name = azurerm_virtual_network.Vnet1.name
-  address_prefixes     = var.V1Bastionsubnet1_address
-}
 
-resource "azurerm_subnet" "VNet1Subnetweb" {
-  name                 = var.v1subnetweb
-  resource_group_name  = azurerm_resource_group.RG.name
-  virtual_network_name = azurerm_virtual_network.Vnet1.name
-  address_prefixes     = var.v1subnetweb_address
-}
-
-resource "azurerm_subnet" "VNet1SubnetBusiness" {
-  name                 = var.v1subnetbusiness
-  resource_group_name  = azurerm_resource_group.RG.name
-  virtual_network_name = azurerm_virtual_network.Vnet1.name
-  address_prefixes     = var.v1subnetbusiness_address
-}
-
-resource "azurerm_subnet" "VNet1subnetsql" {
-  name                 = var.v1subnetsql
-  resource_group_name  = azurerm_resource_group.RG.name
-  virtual_network_name = azurerm_virtual_network.Vnet1.name
-  address_prefixes     = var.v1subnetsql_address
-}
-*/
 #----------------
 #call vnet module
 #----------------
 module "Network" {
   source = "./modules/azure-network-mod"
-
-
-  tags = {
-    name = "Team 8"
-  }
+  rg = var.rg_name
+  #use default settings of network
+  tags = var.tags
 }
 
 
@@ -78,7 +40,7 @@ resource "azurerm_traffic_manager_profile" "t8p2-tm" {
   }
 
 }
-
+# change to pip of app services
 resource "azurerm_traffic_manager_azure_endpoint" "ep1-external-endpoint" {
   name               = "lb1-external-endpoint"
   profile_id         = azurerm_traffic_manager_profile.t8p2-tm.id
@@ -117,7 +79,7 @@ resource "azurerm_bastion_host" "BastionHost" {
 
   ip_configuration {
     name                 = "configuration"
-    subnet_id            = azurerm_subnet.Bastionsubnet.id
+    subnet_id            = module.Network.V1Bastionsubnet1.id
     public_ip_address_id = azurerm_public_ip.BastionPIP.id
   }
 }
@@ -126,66 +88,12 @@ resource "azurerm_bastion_host" "BastionHost" {
 #Virtual Machine Scale Sets
 #------------------------------------------------
 
-# VMSS Web
-resource "azurerm_virtual_machine_scale_set" "V1VMSSWeb" {
-  name                = var.Vnet1WebVM
-  location            = azurerm_resource_group.RG.location
-  resource_group_name = azurerm_resource_group.RG.name
-  upgrade_policy_mode = "Manual"
 
-  sku {
-    name     = "Standard_F2"
-    tier     = "Standard"
-    capacity = 3
-  }
 
-  storage_profile_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
-    version   = "latest"
-  }
-
-  storage_profile_os_disk {
-    name              = ""
-    caching           = "ReadWrite"
-    create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
-  }
-
-  storage_profile_data_disk {
-    lun           = 0
-    caching       = "ReadWrite"
-    create_option = "Empty"
-    disk_size_gb  = 10
-  }
+# VMSS Web needs to be changed to web apps services
 
 
 
-  os_profile {
-    computer_name_prefix = var.VMwebComputername
-    admin_username       = "azureuser"
-    admin_password = "Adminpassword*"
-  }
-
-
-  network_profile {
-    name    = "terraformnetworkprofile1"
-    primary = true
-
-    ip_configuration {
-      name                                   = "V1WebIPConfiguration"
-      primary                                = true
-      subnet_id                              = azurerm_subnet.VNet1Subnetweb.id
-      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V1Pbpepool1.id]
-      load_balancer_inbound_nat_rules_ids    = []
-    }
-  }
-
-  tags = {
-    environment = "JDMB"
-  }
-}
 
 # VMSS Business
 resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
@@ -237,7 +145,7 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
     ip_configuration {
       name                                   = "V1BusinessIPConfiguration"
       primary                                = true
-      subnet_id                              = azurerm_subnet.VNet1SubnetBusiness.id
+      subnet_id                              = module.Network.v1subnetbusiness
       load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V1bpepool2.id]
       load_balancer_inbound_nat_rules_ids    = []
     }
@@ -328,7 +236,7 @@ resource "azurerm_lb" "V1WebtoBusinessLB" {
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress1"
-    subnet_id = azurerm_subnet.VNet1SubnetBusiness.id
+    subnet_id = module.Network.v1subnetbusiness.id
     private_ip_address = "10.0.3.6"
     private_ip_address_allocation = "static"
     private_ip_address_version = "IPv4"
@@ -387,7 +295,7 @@ resource "azurerm_lb" "V1BusinesstoSQLLB2" {
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress2"
-    subnet_id = azurerm_subnet.VNet1subnetsql.id
+    subnet_id = module.Network.v1subnetsql.id
     private_ip_address = "10.0.4.6"
     private_ip_address_allocation = "static"
     private_ip_address_version = "IPv4"
@@ -489,7 +397,7 @@ resource "azurerm_bastion_host" "BastionHost2" {
 
   ip_configuration {
     name                 = "configuration"
-    subnet_id            = azurerm_subnet.Bastionsubnet2.id
+    subnet_id            = module.Network.V2Bastionsubnet1.id
     public_ip_address_id = azurerm_public_ip.BastionPIP2.id
   }
 }
@@ -498,66 +406,12 @@ resource "azurerm_bastion_host" "BastionHost2" {
 #Virtual Machine Scale Sets
 #------------------------------------------------
 
-# VMSS Web
-resource "azurerm_virtual_machine_scale_set" "V2VMSSWeb" {
-  name                = var.Vnet2WebVM
-  location            = azurerm_resource_group.RG.location
-  resource_group_name = azurerm_resource_group.RG.name
-  upgrade_policy_mode = "Manual"
 
-  sku {
-    name     = "Standard_F2"
-    tier     = "Standard"
-    capacity = 3
-  }
 
-  storage_profile_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
-    version   = "latest"
-  }
-
-  storage_profile_os_disk {
-    name              = ""
-    caching           = "ReadWrite"
-    create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
-  }
-
-  storage_profile_data_disk {
-    lun           = 0
-    caching       = "ReadWrite"
-    create_option = "Empty"
-    disk_size_gb  = 10
-  }
+# VMSS Web change to app services
 
 
 
-  os_profile {
-    computer_name_prefix = var.VM2webComputername
-    admin_username       = "azureuser"
-    admin_password = "Adminpassword*"
-  }
-
-
-  network_profile {
-    name    = "terraformnetworkprofile1"
-    primary = true
-
-    ip_configuration {
-      name                                   = "V2WebIPConfiguration"
-      primary                                = true
-      subnet_id                              = azurerm_subnet.VNet2Subnetweb.id
-      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V2Pbpepool1.id]
-      load_balancer_inbound_nat_rules_ids    = []
-    }
-  }
-
-  tags = {
-    environment = "JDMB"
-  }
-}
 
 # VMSS Business
 resource "azurerm_virtual_machine_scale_set" "V2VMSSbusiness" {
@@ -609,7 +463,7 @@ resource "azurerm_virtual_machine_scale_set" "V2VMSSbusiness" {
     ip_configuration {
       name                                   = "V2BusinessIPConfiguration"
       primary                                = true
-      subnet_id                              = azurerm_subnet.VNet2SubnetBusiness.id
+      subnet_id                              = module.Network.v2subnetbusiness.id
       load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V2bpepool2.id]
       load_balancer_inbound_nat_rules_ids    = []
     }
@@ -700,7 +554,7 @@ resource "azurerm_lb" "V2WebtoBusinessLB" {
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress2"
-    subnet_id = azurerm_subnet.VNet2SubnetBusiness.id
+    subnet_id = module.Network.v2subnetbusiness.id
     private_ip_address = "10.1.3.6"
     private_ip_address_allocation = "static"
     private_ip_address_version = "IPv4"
@@ -759,7 +613,7 @@ resource "azurerm_lb" "V2BusinesstoSQLLB2" {
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress2"
-    subnet_id = azurerm_subnet.VNet2subnetsql.id
+    subnet_id = module.Network.v2subnetsql.id
     private_ip_address = "10.1.4.6"
     private_ip_address_allocation = "static"
     private_ip_address_version = "IPv4"
