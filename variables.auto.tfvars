@@ -2,6 +2,7 @@
 rg_name  = "Team8_Project2"
 location = "eastus"
 
+/*
 #Networking Variables
 network_NSG     = "Network_security_Group"
 Vnet1network_name    = "primary"
@@ -12,10 +13,6 @@ V1Bastionsubnet   = "AzureBastionSubnet"
 V1Bastionsubnet1_address = ["10.0.1.0/24"]
 V2Bastionsubnet   = "AzureBastionSubnet2"
 V2Bastionsubnet1_address = ["10.1.1.0/24"]
-v1subnetweb         = "V1subnetweb"
-v1subnetweb_address  = ["10.0.2.0/24"]
-v2subnetweb = "v2subnetweb"
-v2subnetweb_address = ["10.1.2.0/24"]
 v1subnetbusiness = "v1subnetbusiness"
 v1subnetbusiness_address = ["10.0.3.0/24"]
 v2subnetbusiness = "v2subnetbusiness"
@@ -24,7 +21,7 @@ v1subnetsql = "v1subnetsql"
 v1subnetsql_address = ["10.0.4.0/24"]
 v2subnetsql = "v2subnetsql"
 v2subnetsql_address = ["10.1.4.0/24"]
-
+*/
 
 
 #VMSS 
@@ -42,7 +39,7 @@ VM2businessComputername = "V2businesscomputer"
 
 tags = {
   Name = "JDMB",
-  team = "Team8"
+  Team = "Team8"
 }
 
 #VM Variables

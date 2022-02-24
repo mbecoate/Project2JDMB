@@ -47,11 +47,8 @@ resource "azurerm_subnet" "VNet1subnetsql" {
 #----------------
 module "Network" {
   source = "./modules/azure-network-mod"
-
-
-  tags = {
-    name = "Team 8"
-  }
+  #use default settings of network
+  tags = var.tags
 }
 
 
