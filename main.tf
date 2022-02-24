@@ -4,8 +4,9 @@ resource "azurerm_resource_group" "RG" {
   tags = var.tags
 }
 
+/*
+#look at modules
 #VNet1
-
 resource "azurerm_virtual_network" "Vnet1" {
   name                = var.Vnet1network_name
   address_space       = var.address_space
@@ -40,6 +41,19 @@ resource "azurerm_subnet" "VNet1subnetsql" {
   virtual_network_name = azurerm_virtual_network.Vnet1.name
   address_prefixes     = var.v1subnetsql_address
 }
+*/
+#----------------
+#call vnet module
+#----------------
+module "Network" {
+  source = "./modules/azure-network-mod"
+
+
+  tags = {
+    name = "Team 8"
+  }
+}
+
 
 #traffic manager
 
@@ -85,7 +99,7 @@ resource "azurerm_traffic_manager_azure_endpoint" "ep2" {
 */
 
 #------------------------------------------------
-#Bastion Subnet
+#Bastion host
 #------------------------------------------------
 
 resource "azurerm_public_ip" "BastionPIP" {
@@ -417,9 +431,9 @@ resource "azurerm_lb_probe" "V1HealthProbe3" {
 #--------------------------------------------
 # 2nd Virtual Network
 #--------------------------------------------
-
+/*
+# look at modules
 #VNet2
-
 resource "azurerm_virtual_network" "Vnet2" {
   name                = var.Vnet2network_name
   address_space       = var.address_space2
@@ -454,7 +468,7 @@ resource "azurerm_subnet" "VNet2subnetsql" {
   virtual_network_name = azurerm_virtual_network.Vnet1.name
   address_prefixes     = var.v2subnetsql_address
 }
-
+*/
 
 #------------------------------------------------
 #Bastion Subnet

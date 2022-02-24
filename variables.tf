@@ -6,6 +6,8 @@ variable "location" {
   type = string
 }
 
+/*
+#look at modules
 #Networking Variables
 variable "network_NSG" {
   type = string
@@ -77,7 +79,7 @@ variable "V2Bastionsubnet" {
 variable "V2Bastionsubnet1_address" {
   type = list(string)
 }
-
+*/
 
 #VMSS Variables
 
