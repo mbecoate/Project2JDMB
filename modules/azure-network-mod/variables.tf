@@ -6,28 +6,38 @@ variable "tags" {
     default = {}
 }
 
+#resource group
 variable "rg" {
     description = "Resource Group to add to."
     type  = string
 }
-variable "rglocation" {
-    description = "location of rg"
-    type = string
-}
 
 
 #Networking Variables
+variable "vnet1location" {
+    description = "location for first network"
+    type = string
+}
+variable "vnet2location" {
+    description = "location for seconed network"
+    type = string
+}
+
 variable "Vnet1network_name" {
   type = string
+  default = "Vnet1network_name"
 }
 variable "Vnet2network_name" {
   type = string
+  default = "Vnet2network_name"
 }
 variable "address_space" {
   type = list(string)
+  default = ["10.0.0.0/16"]
 }
 variable "address_space2" {
   type = list(string)
+  default = ["10.0.0.0/16"]
 }
 variable "v1subnetweb" {
   type = string
