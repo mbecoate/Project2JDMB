@@ -40,19 +40,17 @@ resource "azurerm_traffic_manager_profile" "t8p2-tm" {
   }
 
 }
-# change to application gatway frontend
 resource "azurerm_traffic_manager_azure_endpoint" "ep1-external-endpoint" {
   name               = "lb1-external-endpoint"
   profile_id         = azurerm_traffic_manager_profile.t8p2-tm.id
-  target_resource_id = azurerm_public_ip.V1toWebPIP.id
+  target_resource_id = azurerm_public_ip.vappgatewaypip1.id
   weight             = 100
   priority            = 1
 }
-#fix me for 2nd vnet
 resource "azurerm_traffic_manager_azure_endpoint" "ep2" {
   name               = "lb2-endpoint"
   profile_name         = azurerm_traffic_manager_profile.t8p2-tm.name
-  target_resource_id = azurerm_public_ip.V1toWebPIP.id
+  target_resource_id = azurerm_public_ip.vappgatewaypip2.id
   weight             = 100
   priority            = 2
 }
