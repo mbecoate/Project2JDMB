@@ -140,10 +140,6 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
       load_balancer_inbound_nat_rules_ids    = []
     }
   }
-
-  tags = {
-    environment = "JDMB"
-  }
 }
 
 
@@ -396,13 +392,7 @@ resource "azurerm_virtual_machine_scale_set" "V2VMSSbusiness" {
       load_balancer_inbound_nat_rules_ids    = []
     }
   }
-
-  tags = {
-    environment = "JDMB"
-  }
 }
-
-#removed public load balancer
 
 
 #We want to make our Load Balancer Internal (Private) to go to our Busines Tier VMSS
@@ -509,17 +499,7 @@ resource "azurerm_lb_probe" "V2HealthProbe3" {
   subnet_id                 = Module.Network.VNet1subnetsql.id
   network_security_group_id = azurerm_network_security_group.example.id
 }
-*/
-/*
-resource "azurerm_public_ip" "vm" {
-  name                = "${var.prefix}-PIP"
-  location            = azurerm_resource_group.RG.location
-  resource_group_name = azurerm_resource_group.RG.name
-  allocation_method   = "Dynamic"
-}
-*/
 
-/*
 resource "azurerm_network_security_group" "example" {
   name                = "${var.prefix}-NSG"
   location            = azurerm_resource_group.RG.location
@@ -794,7 +774,9 @@ resource "azurerm_application_gateway" "vappgateway1" {
   }
 
   backend_address_pool {
-    name = local.backend_address_pool_name
+    name = "appservice1"
+    fqdns = ["${azurerm_app_service.appservice1.name}.azurewebsites.net"]
+    ip_addresses = []
   }
 
   backend_http_settings {
