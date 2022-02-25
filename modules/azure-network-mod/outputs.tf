@@ -29,7 +29,24 @@ output "v2subnetsql" {
 }
 
 
+output "v1subnetvagfe" {
+  description = "contains value of application gateway frontend subnet"
+  value = azurerm_subnet.VAG1frontend
+}
+output "v2subnetvagfe" {
+  description = "contains value of application gateway frontend subnet"
+  value = azurerm_subnet.VAG2frontend
+}
 
+
+output "v1subnetvagbe" {
+  description = "contains value of application gateway backend subnet"
+  value = azurerm_subnet.VAG1backend
+}
+output "v2subnetvagbe" {
+  description = "contains value of application gateway backend subnet"
+  value = azurerm_subnet.VAG2backend
+}
 
 
 

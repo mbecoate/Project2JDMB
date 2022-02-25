@@ -99,5 +99,38 @@ variable "v2subnetsql_address" {
 }
 
 
+variable "v1fesubnetVAG" {
+  type = string
+  default = "v1fesubnetVAG"
+}
+variable "v1besubnetVAG" {
+  type = string
+  default = "v1besubnetVAG"
+}
+variable "v1fesubnetVAG_address" {
+  type = list(string)
+  default = [ "10.0.5.0/16" ]
+}
+variable "v1besubnetVAG_address" {
+  type = list(string)
+  default = [ "10.0.6.0/16" ]
+}
 
+
+variable "v2fesubnetVAG" {
+  type = string
+  default = "v2fesubnetVAG"
+}
+variable "v2besubnetVAG" {
+  type = string
+  default = "v2besubnetVAG"
+}
+variable "v2fesubnetVAG_address" {
+  type = list(string)
+  default = [ "10.1.5.0/16" ]
+}
+variable "v2besubnetVAG_address" {
+  type = list(string)
+  default = [ "10.1.6.0/16" ]
+}
 

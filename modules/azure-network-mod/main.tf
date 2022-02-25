@@ -8,29 +8,36 @@ resource "azurerm_virtual_network" "Vnet1" {
   resource_group_name = var.rg
   tags = var.tags
 }
-
 resource "azurerm_subnet" "Bastionsubnet1" {
   name                 = var.V1Bastionsubnet
   resource_group_name  = var.rg
   virtual_network_name = azurerm_virtual_network.Vnet1.name
   address_prefixes     = var.V1Bastionsubnet1_address
 }
-
-
 resource "azurerm_subnet" "VNet1SubnetBusiness" {
   name                 = var.v1subnetbusiness
   resource_group_name  = var.rg
   virtual_network_name = azurerm_virtual_network.Vnet1.name
   address_prefixes     = var.v1subnetbusiness_address
 }
-
 resource "azurerm_subnet" "VNet1subnetsql" {
   name                 = var.v1subnetsql
   resource_group_name  = var.rg
   virtual_network_name = azurerm_virtual_network.Vnet1.name
   address_prefixes     = var.v1subnetsql_address
 }
-
+resource "azurerm_subnet" "VAG1frontend" {
+  name                 = "VAG1frontend"
+  resource_group_name  = var.rg
+  virtual_network_name = var.v1fesubnetVAG
+  address_prefixes     = var.v1fesubnetVAG_address
+}
+resource "azurerm_subnet" "VAG1backend" {
+  name                 = "VAG1backend"
+  resource_group_name  = var.rg
+  virtual_network_name = var.v1besubnetVAG
+  address_prefixes     = var.v1besubnetVAG_address
+}
 
 
 
@@ -42,28 +49,38 @@ resource "azurerm_virtual_network" "Vnet2" {
   resource_group_name = var.rg
   tags = var.tags
 }
-
 resource "azurerm_subnet" "Bastionsubnet2" {
   name                 = var.V2Bastionsubnet
   resource_group_name  = var.rg
   virtual_network_name = azurerm_virtual_network.Vnet2.name
   address_prefixes     = var.V2Bastionsubnet1_address
 }
-
-
 resource "azurerm_subnet" "VNet2SubnetBusiness" {
   name                 = var.v2subnetbusiness
   resource_group_name  = var.rg
   virtual_network_name = azurerm_virtual_network.Vnet2.name
   address_prefixes     = var.v2subnetbusiness_address
 }
-
 resource "azurerm_subnet" "VNet2subnetsql" {
   name                 = var.v2subnetsql
   resource_group_name  = var.rg
   virtual_network_name = azurerm_virtual_network.Vnet2.name
   address_prefixes     = var.v2subnetsql_address
 }
+resource "azurerm_subnet" "VAG2frontend" {
+  name                 = "VAG2frontend"
+  resource_group_name  = var.rg
+  virtual_network_name = var.v2fesubnetVAG
+  address_prefixes     = var.v2fesubnetVAG_address
+}
+resource "azurerm_subnet" "VAG2backend" {
+  name                 = "VAG2backend"
+  resource_group_name  = var.rg
+  virtual_network_name = var.v2besubnetVAG
+  address_prefixes     = var.v2besubnetVAG_address
+}
+
+
 
 
 #VNet peering
