@@ -651,7 +651,7 @@ resource "azurerm_lb_probe" "V2HealthProbe3" {
 
 
 #------------------------------
-#SQL Server Always On 1 (add LRS)
+#SQL Server Always On 1 in VNet1 (add LRS)
 #------------------------------
 
 /*resource "azurerm_subnet_network_security_group_association" "example" {
@@ -726,6 +726,58 @@ resource "azurerm_network_interface_security_group_association" "example" {
 
 resource "azurerm_virtual_machine" "sqlvm1" {
   name                  = "sqlservervm1"
+  location              = azurerm_resource_group.RG.location
+  resource_group_name   = azurerm_resource_group.RG.name
+  network_interface_ids = [azurerm_network_interface.example.id]
+  vm_size               = "Standard_DS14_v2"
+
+  storage_image_reference {
+    publisher = "MicrosoftSQLServer"
+    offer     = "SQL2017-WS2016"
+    sku       = "SQLDEV"
+    version   = "latest"
+  }
+
+  storage_os_disk {
+    name              = "sqlstorage1-OSDisk"
+    caching           = "ReadOnly"
+    create_option     = "FromImage"
+    managed_disk_type = "Premium_LRS"
+  }
+
+  os_profile {
+    computer_name  = "sqlservervm"
+    admin_username = "azureuser"
+    admin_password = "Adminpassword*"
+  }
+
+  os_profile_windows_config {
+    timezone                  = "Eastern Standard Time"
+    provision_vm_agent        = true
+    enable_automatic_upgrades = true
+  }
+}
+
+
+#------------------------------
+#SQL Server Always On #2 in Vnet1
+#------------------------------
+
+resource "azurerm_network_interface" "sqlnic2" {
+  name                = "sqlservernic2"
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+
+  ip_configuration {
+    name                          = "sqlipconfiguration2"
+    subnet_id                     = module.Network.v1subnetsql.id
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.0.4.7"
+  }
+}
+
+resource "azurerm_virtual_machine" "sqlvm2" {
+  name                  = "sqlservervm2"
   location              = azurerm_resource_group.RG.location
   resource_group_name   = azurerm_resource_group.RG.name
   network_interface_ids = [azurerm_network_interface.example.id]
@@ -835,5 +887,192 @@ resource "azurerm_app_service" "appservice2" {
     name  = "Database"
     type  = "SQLServer"
     value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
+  }
+}
+
+
+
+#------------------------------
+#Virtual Application Gateway in Vnet 1
+#------------------------------
+
+resource "azurerm_subnet" "frontend" {
+  name                 = "frontend"
+  resource_group_name  = azurerm_resource_group.RG.name
+  virtual_network_name = module.Network.
+  address_prefixes     = ["10.254.0.0/24"]
+}
+
+resource "azurerm_subnet" "backend" {
+  name                 = "backend"
+  resource_group_name  = azurerm_resource_group.RG.name
+  virtual_network_name = module.Network.
+  address_prefixes     = ["10.254.2.0/24"]
+}
+
+resource "azurerm_public_ip" "example" {
+  name                = "example-pip"
+  resource_group_name = azurerm_resource_group.RG.name
+  location            = azurerm_resource_group.RG.location
+  allocation_method   = "Dynamic"
+}
+
+#&nbsp;since these variables are re-used - a locals block makes this more maintainable
+locals {
+  backend_address_pool_name      = "${azurerm_virtual_network.example.name}-beap"
+  frontend_port_name             = "${azurerm_virtual_network.example.name}-feport"
+  frontend_ip_configuration_name = "${azurerm_virtual_network.example.name}-feip"
+  http_setting_name              = "${azurerm_virtual_network.example.name}-be-htst"
+  listener_name                  = "${azurerm_virtual_network.example.name}-httplstn"
+  request_routing_rule_name      = "${azurerm_virtual_network.example.name}-rqrt"
+  redirect_configuration_name    = "${azurerm_virtual_network.example.name}-rdrcfg"
+}
+
+resource "azurerm_application_gateway" "network" {
+  name                = "example-appgateway"
+  resource_group_name = azurerm_resource_group.RG.name
+  location            = azurerm_resource_group.RG.location
+
+  sku {
+    name     = "Standard_Small"
+    tier     = "Standard"
+    capacity = 2
+  }
+
+  gateway_ip_configuration {
+    name      = "my-gateway-ip-configuration"
+    subnet_id = azurerm_subnet.frontend.id
+  }
+
+  frontend_port {
+    name = local.frontend_port_name
+    port = 80
+  }
+
+  frontend_ip_configuration {
+    name                 = local.frontend_ip_configuration_name
+    public_ip_address_id = azurerm_public_ip.example.id
+  }
+
+  backend_address_pool {
+    name = local.backend_address_pool_name
+  }
+
+  backend_http_settings {
+    name                  = local.http_setting_name
+    cookie_based_affinity = "Disabled"
+    path                  = "/path1/"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 60
+  }
+
+  http_listener {
+    name                           = local.listener_name
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_port_name             = local.frontend_port_name
+    protocol                       = "Http"
+  }
+
+  request_routing_rule {
+    name                       = local.request_routing_rule_name
+    rule_type                  = "Basic"
+    http_listener_name         = local.listener_name
+    backend_address_pool_name  = local.backend_address_pool_name
+    backend_http_settings_name = local.http_setting_name
+  }
+}
+
+
+
+
+#------------------------------
+#Virtual Application Gateway in Vnet2 
+#------------------------------
+
+resource "azurerm_subnet" "frontend" {
+  name                 = "frontend"
+  resource_group_name  = azurerm_resource_group.RG.name
+  virtual_network_name = module.Network.
+  address_prefixes     = ["10.254.0.0/24"]
+}
+
+resource "azurerm_subnet" "backend" {
+  name                 = "backend"
+  resource_group_name  = azurerm_resource_group.RG.name
+  virtual_network_name = module.Network.
+  address_prefixes     = ["10.254.2.0/24"]
+}
+
+resource "azurerm_public_ip" "example" {
+  name                = "example-pip"
+  resource_group_name = azurerm_resource_group.RG.name
+  location            = azurerm_resource_group.RG.location
+  allocation_method   = "Dynamic"
+}
+
+#&nbsp;since these variables are re-used - a locals block makes this more maintainable
+locals {
+  backend_address_pool_name      = "${azurerm_virtual_network.example.name}-beap"
+  frontend_port_name             = "${azurerm_virtual_network.example.name}-feport"
+  frontend_ip_configuration_name = "${azurerm_virtual_network.example.name}-feip"
+  http_setting_name              = "${azurerm_virtual_network.example.name}-be-htst"
+  listener_name                  = "${azurerm_virtual_network.example.name}-httplstn"
+  request_routing_rule_name      = "${azurerm_virtual_network.example.name}-rqrt"
+  redirect_configuration_name    = "${azurerm_virtual_network.example.name}-rdrcfg"
+}
+
+resource "azurerm_application_gateway" "network" {
+  name                = "example-appgateway"
+  resource_group_name = azurerm_resource_group.RG.name
+  location            = azurerm_resource_group.RG.location
+
+  sku {
+    name     = "Standard_Small"
+    tier     = "Standard"
+    capacity = 2
+  }
+
+  gateway_ip_configuration {
+    name      = "my-gateway-ip-configuration"
+    subnet_id = azurerm_subnet.frontend.id
+  }
+
+  frontend_port {
+    name = local.frontend_port_name
+    port = 80
+  }
+
+  frontend_ip_configuration {
+    name                 = local.frontend_ip_configuration_name
+    public_ip_address_id = azurerm_public_ip.example.id
+  }
+
+  backend_address_pool {
+    name = local.backend_address_pool_name
+  }
+
+  backend_http_settings {
+    name                  = local.http_setting_name
+    cookie_based_affinity = "Disabled"
+    path                  = "/path1/"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 60
+  }
+
+  http_listener {
+    name                           = local.listener_name
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_port_name             = local.frontend_port_name
+    protocol                       = "Http"
+  }
+
+  request_routing_rule {
+    name                       = local.request_routing_rule_name
+    rule_type                  = "Basic"
+    http_listener_name         = local.listener_name
+    backend_address_pool_name  = local.backend_address_pool_name
+    backend_http_settings_name = local.http_setting_name
   }
 }
