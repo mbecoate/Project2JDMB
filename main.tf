@@ -581,8 +581,8 @@ resource "azurerm_virtual_machine" "sqlvm1" {
   name                  = "sqlservervm1"
   location              = azurerm_resource_group.RG.location
   resource_group_name   = azurerm_resource_group.RG.name
-  network_interface_ids = [azurerm_network_interface.example.id]
-  vm_size               = "Standard_DS14_v2"
+  network_interface_ids = [azurerm_network_interface.sqlnic1.id]
+  vm_size               = "Standard_B2s"
 
   storage_image_reference {
     publisher = "MicrosoftSQLServer"
@@ -633,8 +633,8 @@ resource "azurerm_virtual_machine" "sqlvm2" {
   name                  = "sqlservervm2"
   location              = azurerm_resource_group.RG.location
   resource_group_name   = azurerm_resource_group.RG.name
-  network_interface_ids = [azurerm_network_interface.example.id]
-  vm_size               = "Standard_DS14_v2"
+  network_interface_ids = [azurerm_network_interface.sqlnic2.id]
+  vm_size               = "Standard_B2s"
 
   storage_image_reference {
     publisher = "MicrosoftSQLServer"
@@ -751,8 +751,8 @@ resource "azurerm_app_service" "appservice2" {
 
 
 
-resource "azurerm_public_ip" "example" {
-  name                = "example-pip"
+resource "azurerm_public_ip" "vappgatewaypip1" {
+  name                = "vappgateway1-pip"
   resource_group_name = azurerm_resource_group.RG.name
   location            = azurerm_resource_group.RG.location
   allocation_method   = "Dynamic"
@@ -769,8 +769,8 @@ locals {
   redirect_configuration_name    = "${azurerm_virtual_network.example.name}-rdrcfg"
 }
 
-resource "azurerm_application_gateway" "network" {
-  name                = "example-appgateway"
+resource "azurerm_application_gateway" "vappgateway1" {
+  name                = "v-appgateway1"
   resource_group_name = azurerm_resource_group.RG.name
   location            = azurerm_resource_group.RG.location
 
@@ -782,7 +782,7 @@ resource "azurerm_application_gateway" "network" {
 
   gateway_ip_configuration {
     name      = "my-gateway-ip-configuration"
-    subnet_id = azurerm_subnet.frontend.id
+    subnet_id = module.Network.v1subnetvagfe.id
   }
 
   frontend_port {
@@ -792,7 +792,7 @@ resource "azurerm_application_gateway" "network" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = azurerm_public_ip.example.id
+    public_ip_address_id = azurerm_public_ip.vappgatewaypip1.id
   }
 
   backend_address_pool {
@@ -833,8 +833,8 @@ resource "azurerm_application_gateway" "network" {
 
 
 
-resource "azurerm_public_ip" "example" {
-  name                = "example-pip"
+resource "azurerm_public_ip" "vappgatewaypip2" {
+  name                = "vappgateway2-pip"
   resource_group_name = azurerm_resource_group.RG.name
   location            = azurerm_resource_group.RG.location
   allocation_method   = "Dynamic"
@@ -851,8 +851,8 @@ locals {
   redirect_configuration_name    = "${azurerm_virtual_network.example.name}-rdrcfg"
 }
 
-resource "azurerm_application_gateway" "network" {
-  name                = "example-appgateway"
+resource "azurerm_application_gateway" "vappgateway2" {
+  name                = "v-appgateway2"
   resource_group_name = azurerm_resource_group.RG.name
   location            = azurerm_resource_group.RG.location
 
