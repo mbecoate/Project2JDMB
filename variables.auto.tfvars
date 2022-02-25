@@ -1,46 +1,39 @@
-#resource group variables
-rg_name  = "Team8_Project2"
-location = "eastus"
-
-/*
-#Networking Variables
-network_NSG     = "Network_security_Group"
-Vnet1network_name    = "primary"
-Vnet2network_name = "secondary"
-address_space   = ["10.0.0.0/16"]
-address_space2 = ["10.1.0.0/16"]
-V1Bastionsubnet   = "AzureBastionSubnet"
-V1Bastionsubnet1_address = ["10.0.1.0/24"]
-V2Bastionsubnet   = "AzureBastionSubnet2"
-V2Bastionsubnet1_address = ["10.1.1.0/24"]
-v1subnetbusiness = "v1subnetbusiness"
-v1subnetbusiness_address = ["10.0.3.0/24"]
-v2subnetbusiness = "v2subnetbusiness"
-v2subnetbusiness_address = ["10.1.3.0/24"]
-v1subnetsql = "v1subnetsql"
-v1subnetsql_address = ["10.0.4.0/24"]
-v2subnetsql = "v2subnetsql"
-v2subnetsql_address = ["10.1.4.0/24"]
-*/
-
-
-#VMSS 
-Vnet1WebVM = "V1WebVMSS"
-VMwebComputername = "V1webComputer"
-Vnet1businessVM = "V1businessVMSS"
-VMbusinessComputername = "V1businesscomputer"
-Vnet2WebVM = "V2WebVMSS"
-VM2webComputername = "V2webComputer"
-Vnet2businessVM = "V2businessVMSS"
-VM2businessComputername = "V2businesscomputer"
-
-
 
 
 tags = {
   Name = "JDMB",
   Team = "Team8"
 }
+
+
+#resource group variables
+rg_name  = "Team8_Project2"
+location = "eastus"
+
+
+#Vault Variables
+secrets_rg_name   = "secrets"
+secret_vault_name = "mattbkeyvaultTF"
+
+
+/*
+#Networking Variables
+network_NSG     = "Network_security_Group"
+*/
+/*
+Vnet1WebVM = "V1WebVMSS"
+VMwebComputername = "V1webComputer"
+Vnet2WebVM = "V2WebVMSS"
+VM2webComputername = "V2webComputer"
+*/
+
+
+#VMSS 
+Vnet1businessVM = "V1businessVMSS"
+VMbusinessComputername = "V1businesscomputer"
+Vnet2businessVM = "V2businessVMSS"
+VM2businessComputername = "V2businesscomputer"
+
 
 #VM Variables
 
@@ -68,6 +61,4 @@ security_rule_destination_port_range     = "*"
 security_rule_source_address_prefix      = "*"
 security_rule_destination_address_prefix = "*"
 
-#Vault Variables
-secrets_rg_name   = "secrets"
-secret_vault_name = "mattbkeyvaultTF"
+

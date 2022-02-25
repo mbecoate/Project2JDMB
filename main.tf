@@ -157,9 +157,9 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
 }
 
 
-
+#change to app services or remove? could change to a front door also
 #We want to make our Load Balancer Public to go to our Web Tier VMSS
-
+/*
 resource "azurerm_public_ip" "V1toWebPIP" {
   name                = "PublicIPForLB1"
   location            = "east US"
@@ -225,7 +225,7 @@ resource "azurerm_lb_probe" "V1PHealthProbe1" {
   request_path        = "/health"
   port                = 80
 }
-
+*/
 
 
 #We want to make our Load Balancer Internal (Private) to go to our Busines Tier VMSS
