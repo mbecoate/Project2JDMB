@@ -40,20 +40,18 @@ resource "azurerm_traffic_manager_profile" "t8p2-tm" {
   }
 
 }
-# change to application gatway frontend
 resource "azurerm_traffic_manager_azure_endpoint" "ep1-external-endpoint" {
   name               = "lb1-external-endpoint"
   profile_id         = azurerm_traffic_manager_profile.t8p2-tm.id
-  target_resource_id = azurerm_public_ip.V1toWebPIP.id
+  target_resource_id = azurerm_public_ip.vappgatewaypip1.id
   weight             = 100
   priority            = 1
 }
-#fix me for 2nd vnet
-resource "azurerm_traffic_manager_azure_endpoint" "ep2" {
-  name               = "lb2-endpoint"
-  profile_name         = azurerm_traffic_manager_profile.t8p2-tm.name
-  target_resource_id = azurerm_public_ip.V1toWebPIP.id
-  weight             = 100
+resource "azurerm_traffic_manager_azure_endpoint" "ep2-external-endpoint" {
+  name               = "lb2-external-endpoint"
+  profile_id         = azurerm_traffic_manager_profile.t8p2-tm.id
+  target_resource_id = azurerm_public_ip.vappgatewaypip2.id
+  weight             = 101
   priority            = 2
 }
 
@@ -137,14 +135,10 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
     ip_configuration {
       name                                   = "V1BusinessIPConfiguration"
       primary                                = true
-      subnet_id                              = module.Network.v1subnetbusiness
+      subnet_id                              = module.Network.v1subnetbusiness.id
       load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V1bpepool2.id]
       load_balancer_inbound_nat_rules_ids    = []
     }
-  }
-
-  tags = {
-    environment = "JDMB"
   }
 }
 
@@ -398,13 +392,7 @@ resource "azurerm_virtual_machine_scale_set" "V2VMSSbusiness" {
       load_balancer_inbound_nat_rules_ids    = []
     }
   }
-
-  tags = {
-    environment = "JDMB"
-  }
 }
-
-#removed public load balancer
 
 
 #We want to make our Load Balancer Internal (Private) to go to our Busines Tier VMSS
@@ -511,17 +499,7 @@ resource "azurerm_lb_probe" "V2HealthProbe3" {
   subnet_id                 = Module.Network.VNet1subnetsql.id
   network_security_group_id = azurerm_network_security_group.example.id
 }
-*/
-/*
-resource "azurerm_public_ip" "vm" {
-  name                = "${var.prefix}-PIP"
-  location            = azurerm_resource_group.RG.location
-  resource_group_name = azurerm_resource_group.RG.name
-  allocation_method   = "Dynamic"
-}
-*/
 
-/*
 resource "azurerm_network_security_group" "example" {
   name                = "${var.prefix}-NSG"
   location            = azurerm_resource_group.RG.location
@@ -682,7 +660,7 @@ resource "azurerm_app_service_plan" "appserviceplan1" {
 }
 
 resource "azurerm_app_service" "appservice1" {
-  name                = "app_service1"
+  name                = "app-service1"
   location            = azurerm_resource_group.RG.location
   resource_group_name = azurerm_resource_group.RG.name
   app_service_plan_id = azurerm_app_service_plan.appserviceplan1.id
@@ -722,7 +700,7 @@ resource "azurerm_app_service_plan" "appserviceplan2" {
 }
 
 resource "azurerm_app_service" "appservice2" {
-  name                = "app_service2"
+  name                = "app-service2"
   location            = azurerm_resource_group.RG.location
   resource_group_name = azurerm_resource_group.RG.name
   app_service_plan_id = azurerm_app_service_plan.appserviceplan2.id
@@ -760,13 +738,13 @@ resource "azurerm_public_ip" "vappgatewaypip1" {
 
 #&nbsp;since these variables are re-used - a locals block makes this more maintainable
 locals {
-  backend_address_pool_name      = "${azurerm_virtual_network.example.name}-beap"
-  frontend_port_name             = "${azurerm_virtual_network.example.name}-feport"
-  frontend_ip_configuration_name = "${azurerm_virtual_network.example.name}-feip"
-  http_setting_name              = "${azurerm_virtual_network.example.name}-be-htst"
-  listener_name                  = "${azurerm_virtual_network.example.name}-httplstn"
-  request_routing_rule_name      = "${azurerm_virtual_network.example.name}-rqrt"
-  redirect_configuration_name    = "${azurerm_virtual_network.example.name}-rdrcfg"
+  backend_address_pool_name      = "${module.Network.Vnet1.name}-beap"
+  frontend_port_name             = "${module.Network.Vnet1.name}-feport"
+  frontend_ip_configuration_name = "${module.Network.Vnet1.name}-feip"
+  http_setting_name              = "${module.Network.Vnet1.name}-be-htst"
+  listener_name                  = "${module.Network.Vnet1.name}-httplstn"
+  request_routing_rule_name      = "${module.Network.Vnet1.name}-rqrt"
+  redirect_configuration_name    = "${module.Network.Vnet1.name}-rdrcfg"
 }
 
 resource "azurerm_application_gateway" "vappgateway1" {
@@ -796,7 +774,9 @@ resource "azurerm_application_gateway" "vappgateway1" {
   }
 
   backend_address_pool {
-    name = local.backend_address_pool_name
+    name = "appservice1"
+    fqdns = ["${azurerm_app_service.appservice1.name}.azurewebsites.net"]
+    ip_addresses = []
   }
 
   backend_http_settings {
@@ -842,13 +822,13 @@ resource "azurerm_public_ip" "vappgatewaypip2" {
 
 #&nbsp;since these variables are re-used - a locals block makes this more maintainable
 locals {
-  backend_address_pool_name      = "${azurerm_virtual_network.example.name}-beap"
-  frontend_port_name             = "${azurerm_virtual_network.example.name}-feport"
-  frontend_ip_configuration_name = "${azurerm_virtual_network.example.name}-feip"
-  http_setting_name              = "${azurerm_virtual_network.example.name}-be-htst"
-  listener_name                  = "${azurerm_virtual_network.example.name}-httplstn"
-  request_routing_rule_name      = "${azurerm_virtual_network.example.name}-rqrt"
-  redirect_configuration_name    = "${azurerm_virtual_network.example.name}-rdrcfg"
+  backend_address_pool_name2      = "${module.Network.Vnet2.name}-beap"
+  frontend_port_name2             = "${module.Network.Vnet2.name}-feport"
+  frontend_ip_configuration_name2 = "${module.Network.Vnet2.name}-feip"
+  http_setting_name2              = "${module.Network.Vnet2.name}-be-htst"
+  listener_name2                  = "${module.Network.Vnet2.name}-httplstn"
+  request_routing_rule_name2      = "${module.Network.Vnet2.name}-rqrt"
+  redirect_configuration_name2    = "${module.Network.Vnet2.name}-rdrcfg"
 }
 
 resource "azurerm_application_gateway" "vappgateway2" {
@@ -868,21 +848,21 @@ resource "azurerm_application_gateway" "vappgateway2" {
   }
 
   frontend_port {
-    name = local.frontend_port_name
+    name = local.frontend_port_name2
     port = 80
   }
 
   frontend_ip_configuration {
-    name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = azurerm_public_ip.example.id
+    name                 = local.frontend_ip_configuration_name2
+    public_ip_address_id = azurerm_public_ip.vappgatewaypip2.id
   }
 
   backend_address_pool {
-    name = local.backend_address_pool_name
+    name = local.backend_address_pool_name2
   }
 
   backend_http_settings {
-    name                  = local.http_setting_name
+    name                  = local.http_setting_name2
     cookie_based_affinity = "Disabled"
     path                  = "/path1/"
     port                  = 80
@@ -891,17 +871,17 @@ resource "azurerm_application_gateway" "vappgateway2" {
   }
 
   http_listener {
-    name                           = local.listener_name
-    frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = local.frontend_port_name
+    name                           = local.listener_name2
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name2
+    frontend_port_name             = local.frontend_port_name2
     protocol                       = "Http"
   }
 
   request_routing_rule {
-    name                       = local.request_routing_rule_name
+    name                       = local.request_routing_rule_name2
     rule_type                  = "Basic"
-    http_listener_name         = local.listener_name
-    backend_address_pool_name  = local.backend_address_pool_name
-    backend_http_settings_name = local.http_setting_name
+    http_listener_name         = local.listener_name2
+    backend_address_pool_name  = local.backend_address_pool_name2
+    backend_http_settings_name = local.http_setting_name2
   }
 }
