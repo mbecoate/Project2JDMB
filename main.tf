@@ -14,6 +14,10 @@ module "Network" {
   rg = var.rg_name
   #use default settings of network
   tags = var.tags
+
+  depends_on = [
+    azurerm_resource_group.RG
+  ]
 }
 
 
@@ -734,6 +738,7 @@ resource "azurerm_public_ip" "vappgatewaypip1" {
   resource_group_name = azurerm_resource_group.RG.name
   location            = azurerm_resource_group.RG.location
   allocation_method   = "Dynamic"
+  domain_name_label = "vappgateway1"
 }
 
 #&nbsp;since these variables are re-used - a locals block makes this more maintainable
@@ -818,6 +823,7 @@ resource "azurerm_public_ip" "vappgatewaypip2" {
   resource_group_name = azurerm_resource_group.RG.name
   location            = azurerm_resource_group.RG.location
   allocation_method   = "Dynamic"
+  domain_name_label = "vappgateway2"
 }
 
 #&nbsp;since these variables are re-used - a locals block makes this more maintainable
