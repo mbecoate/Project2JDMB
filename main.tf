@@ -643,6 +643,11 @@ resource "azurerm_virtual_machine" "sqlvm2" {
     provision_vm_agent        = true
     enable_automatic_upgrades = true
   }
+  
+  depends_on = [
+    azurerm_network_interface.sqlnic2
+  ]
+
 }
 
 
@@ -865,6 +870,7 @@ resource "azurerm_application_gateway" "vappgateway2" {
 
   backend_address_pool {
     name = local.backend_address_pool_name2
+    fqdns = ["${azurerm_app_service.appservice2.name}.azurewebsites.net"]
   }
 
   backend_http_settings {

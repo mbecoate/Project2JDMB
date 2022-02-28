@@ -91,6 +91,9 @@ resource "azurerm_virtual_network_peering" "Vnet1_to_Vnet2" {
   remote_virtual_network_id    = azurerm_virtual_network.Vnet2.id
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
+  depends_on = [
+    azurerm_virtual_network.Vnet1, azurerm_virtual_network.Vnet2
+  ]
 }
 resource "azurerm_virtual_network_peering" "Vnet2-to-Vnet1" {
   name                         = "${azurerm_virtual_network.Vnet2.name}-to-${azurerm_virtual_network.Vnet1.name}"
@@ -99,6 +102,9 @@ resource "azurerm_virtual_network_peering" "Vnet2-to-Vnet1" {
   remote_virtual_network_id    = azurerm_virtual_network.Vnet1.id
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
+  depends_on = [
+    azurerm_virtual_network.Vnet1, azurerm_virtual_network.Vnet2
+  ]
 }
 
 
