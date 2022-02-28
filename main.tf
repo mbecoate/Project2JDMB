@@ -548,7 +548,7 @@ resource "azurerm_network_interface" "sqlnic1" {
     name                          = "sqlipconfiguration1"
     subnet_id                     = module.Network.v1subnetsql.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.4.6"
+    private_ip_address            = "10.0.4.7"
   }
 }
 
@@ -607,7 +607,7 @@ resource "azurerm_network_interface" "sqlnic2" {
     name                          = "sqlipconfiguration2"
     subnet_id                     = module.Network.v1subnetsql.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.4.7"
+    private_ip_address            = "10.0.4.8"
   }
 }
 

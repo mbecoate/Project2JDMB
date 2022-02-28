@@ -47,7 +47,7 @@ variable "address_space2" {
 
 variable "V1Bastionsubnet" {
   type = string
-  default = "V1Bastionsubnet"
+  default = "AzureBastionSubnet"
 }
 variable "V1Bastionsubnet1_address" {
   type = list(string)
@@ -55,7 +55,7 @@ variable "V1Bastionsubnet1_address" {
 }
 variable "V2Bastionsubnet" {
   type = string
-  default = "V2Bastionsubnet"
+  default = "AzureBastionSubnet"
 }
 variable "V2Bastionsubnet1_address" {
   type = list(string)
