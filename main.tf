@@ -935,14 +935,9 @@ resource "azurerm_app_service" "appservice2" {
 resource "azurerm_public_ip" "vappgatewaypip1" {
   name                = "vappgateway1-pip"
   resource_group_name = azurerm_resource_group.RG.name
-<<<<<<< HEAD
-  location            = azurerm_resource_group.RG.location
-  allocation_method   = "Static"
-=======
   location            = var.location1
   allocation_method   = "Dynamic"
   domain_name_label = "vappgateway1"
->>>>>>> 51e60233d0a017cf64691e63d641c99311876590
 }
 
 #&nbsp;since these variables are re-used - a locals block makes this more maintainable
@@ -1025,14 +1020,9 @@ resource "azurerm_application_gateway" "vappgateway1" {
 resource "azurerm_public_ip" "vappgatewaypip2" {
   name                = "vappgateway2-pip"
   resource_group_name = azurerm_resource_group.RG.name
-<<<<<<< HEAD
-  location            = azurerm_resource_group.RG.location
-  allocation_method   = "Static"
-=======
   location            = var.location2
   allocation_method   = "Dynamic"
   domain_name_label = "vappgateway2"
->>>>>>> 51e60233d0a017cf64691e63d641c99311876590
 }
 
 #&nbsp;since these variables are re-used - a locals block makes this more maintainable
