@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "RG" {
   name     = var.rg_name
-  location = var.location
+  location = var.location1
   tags = var.tags
 }
 
@@ -66,7 +66,7 @@ resource "azurerm_traffic_manager_azure_endpoint" "ep2-external-endpoint" {
 
 resource "azurerm_public_ip" "BastionPIP" {
   name                = "BPIP"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
   allocation_method   = "Static"
   sku                 = "Standard"
@@ -74,7 +74,7 @@ resource "azurerm_public_ip" "BastionPIP" {
 
 resource "azurerm_bastion_host" "BastionHost" {
   name                = "B1Host"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   ip_configuration {
@@ -92,7 +92,7 @@ resource "azurerm_bastion_host" "BastionHost" {
 # VMSS Business
 resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
   name                = var.Vnet1businessVM
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
   upgrade_policy_mode = "Manual"
 
@@ -214,7 +214,7 @@ resource "azurerm_lb_probe" "V1PHealthProbe1" {
 #We want to make our Load Balancer Internal (Private) to go to our Busines Tier VMSS
 resource "azurerm_lb" "V1WebtoBusinessLB" {
   name                = "V1WbLB"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   frontend_ip_configuration {
@@ -270,7 +270,7 @@ resource "azurerm_lb_probe" "V1HealthProbe2" {
 #We want to make our Load Balancer Internal (Private) to go to our SQL database
 resource "azurerm_lb" "V1BusinesstoSQLLB2" {
   name                = "V1BSQlLB2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   frontend_ip_configuration {
@@ -319,7 +319,7 @@ resource "azurerm_lb_probe" "V1HealthProbe3" {
 
 resource "azurerm_public_ip" "BastionPIP2" {
   name                = "BPIP2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
   allocation_method   = "Static"
   sku                 = "Standard"
@@ -327,7 +327,7 @@ resource "azurerm_public_ip" "BastionPIP2" {
 
 resource "azurerm_bastion_host" "BastionHost2" {
   name                = "B2Host"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
 
   ip_configuration {
@@ -344,7 +344,7 @@ resource "azurerm_bastion_host" "BastionHost2" {
 # VMSS Business
 resource "azurerm_virtual_machine_scale_set" "V2VMSSbusiness" {
   name                = var.Vnet2businessVM
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
   upgrade_policy_mode = "Manual"
 
@@ -402,7 +402,7 @@ resource "azurerm_virtual_machine_scale_set" "V2VMSSbusiness" {
 #We want to make our Load Balancer Internal (Private) to go to our Busines Tier VMSS
 resource "azurerm_lb" "V2WebtoBusinessLB" {
   name                = "V2WbLB"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
 
   frontend_ip_configuration {
@@ -458,7 +458,7 @@ resource "azurerm_lb_probe" "V2HealthProbe2" {
 #We want to make our Load Balancer Internal (Private) to go to our SQL database
 resource "azurerm_lb" "V2BusinesstoSQLLB2" {
   name                = "V2BSQlLB2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
 
   frontend_ip_configuration {
@@ -541,7 +541,7 @@ resource "azurerm_network_security_rule" "MSSQLRule" {
 
 resource "azurerm_network_interface" "sqlnic1" {
   name                = "sqlservernic1"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   ip_configuration {
@@ -561,7 +561,7 @@ resource "azurerm_network_interface_security_group_association" "example" {
 
 resource "azurerm_virtual_machine" "sqlvm1" {
   name                  = "sqlservervm1"
-  location              = azurerm_resource_group.RG.location
+  location              = var.location1
   resource_group_name   = azurerm_resource_group.RG.name
   network_interface_ids = [azurerm_network_interface.sqlnic1.id]
   vm_size               = "Standard_B2s"
@@ -600,7 +600,7 @@ resource "azurerm_virtual_machine" "sqlvm1" {
 
 resource "azurerm_network_interface" "sqlnic2" {
   name                = "sqlservernic2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
 
   ip_configuration {
@@ -613,7 +613,7 @@ resource "azurerm_network_interface" "sqlnic2" {
 
 resource "azurerm_virtual_machine" "sqlvm2" {
   name                  = "sqlservervm2"
-  location              = azurerm_resource_group.RG.location
+  location              = var.location2
   resource_group_name   = azurerm_resource_group.RG.name
   network_interface_ids = [azurerm_network_interface.sqlnic2.id]
   vm_size               = "Standard_B2s"
@@ -654,7 +654,7 @@ resource "azurerm_virtual_machine" "sqlvm2" {
 
 resource "azurerm_app_service_plan" "appserviceplan1" {
   name                = "appservice1"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   sku {
@@ -665,7 +665,7 @@ resource "azurerm_app_service_plan" "appserviceplan1" {
 
 resource "azurerm_app_service" "appservice1" {
   name                = "app-service1"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
   app_service_plan_id = azurerm_app_service_plan.appserviceplan1.id
 
@@ -694,7 +694,7 @@ resource "azurerm_app_service" "appservice1" {
 
 resource "azurerm_app_service_plan" "appserviceplan2" {
   name                = "appservice2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
 
   sku {
@@ -705,7 +705,7 @@ resource "azurerm_app_service_plan" "appserviceplan2" {
 
 resource "azurerm_app_service" "appservice2" {
   name                = "app-service2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
   app_service_plan_id = azurerm_app_service_plan.appserviceplan2.id
 
@@ -736,7 +736,7 @@ resource "azurerm_app_service" "appservice2" {
 resource "azurerm_public_ip" "vappgatewaypip1" {
   name                = "vappgateway1-pip"
   resource_group_name = azurerm_resource_group.RG.name
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   allocation_method   = "Dynamic"
   domain_name_label = "vappgateway1"
 }
@@ -755,7 +755,7 @@ locals {
 resource "azurerm_application_gateway" "vappgateway1" {
   name                = "v-appgateway1"
   resource_group_name = azurerm_resource_group.RG.name
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
 
   sku {
     name     = "Standard_Small"
@@ -821,7 +821,7 @@ resource "azurerm_application_gateway" "vappgateway1" {
 resource "azurerm_public_ip" "vappgatewaypip2" {
   name                = "vappgateway2-pip"
   resource_group_name = azurerm_resource_group.RG.name
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   allocation_method   = "Dynamic"
   domain_name_label = "vappgateway2"
 }
@@ -840,7 +840,7 @@ locals {
 resource "azurerm_application_gateway" "vappgateway2" {
   name                = "v-appgateway2"
   resource_group_name = azurerm_resource_group.RG.name
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
 
   sku {
     name     = "Standard_Small"
