@@ -1,4 +1,13 @@
 
+output "Vnet1" {
+  description = "The first vnet"
+  value = azurerm_virtual_network.Vnet1
+}
+output "Vnet2" {
+  description = "The first vnet"
+  value = azurerm_virtual_network.Vnet2
+}
+
 output "V1Bastionsubnet1" {
   description = "contains value of bastion1 subnet"
   value = azurerm_subnet.Bastionsubnet1
