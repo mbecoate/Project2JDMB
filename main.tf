@@ -286,6 +286,21 @@ resource "azurerm_lb_backend_address_pool" "V1bpepool3" {
   loadbalancer_id     = azurerm_lb.V1BusinesstoSQLLB2.id
   name                = "V1BackEndAddressPool3"
 }
+
+resource "azurerm_lb_backend_address_pool_address" "address1" {
+  name                    = "address1"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  virtual_network_id      = module.Network.Vnet1.id
+  ip_address              = "10.0.4.7"
+}
+
+resource "azurerm_lb_backend_address_pool_address" "address2" {
+  name                    = "address2"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  virtual_network_id      = module.Network.Vnet1.id
+  ip_address              = "10.0.4.8"
+}
+
 resource "azurerm_lb_rule" "V1bustosqllbrule1" {
   resource_group_name            = azurerm_resource_group.RG.name
   loadbalancer_id                = azurerm_lb.V1BusinesstoSQLLB2.id
@@ -474,6 +489,21 @@ resource "azurerm_lb_backend_address_pool" "V2bpepool3" {
   loadbalancer_id     = azurerm_lb.V2BusinesstoSQLLB2.id
   name                = "V2BackEndAddressPool3"
 }
+
+resource "azurerm_lb_backend_address_pool_address" "address3" {
+  name                    = "address3"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  virtual_network_id      = module.Network.Vnet2.id
+  ip_address              = "10.1.4.7"
+}
+
+resource "azurerm_lb_backend_address_pool_address" "address4" {
+  name                    = "address4"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  virtual_network_id      = module.Network.Vnet2.id
+  ip_address              = "10.1.4.8"
+}
+
 resource "azurerm_lb_rule" "V2bustosqllbrule1" {
   resource_group_name            = azurerm_resource_group.RG.name
   loadbalancer_id                = azurerm_lb.V2BusinesstoSQLLB2.id
@@ -559,12 +589,19 @@ resource "azurerm_network_interface_security_group_association" "example" {
 }
 */
 
+resource "azurerm_availability_set" "avs1" {
+  name                = "avs1-aset"
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+}
+
 resource "azurerm_virtual_machine" "sqlvm1" {
   name                  = "sqlservervm1"
   location              = var.location1
   resource_group_name   = azurerm_resource_group.RG.name
   network_interface_ids = [azurerm_network_interface.sqlnic1.id]
   vm_size               = "Standard_B2s"
+  availability_set_id = azurerm_availability_set.avs1.id
 
   storage_image_reference {
     publisher = "MicrosoftSQLServer"
@@ -574,7 +611,7 @@ resource "azurerm_virtual_machine" "sqlvm1" {
   }
 
   storage_os_disk {
-    name              = "sqlstorage1-OSDisk"
+    name              = "team8sqlstorage1-OSDisk"
     caching           = "ReadOnly"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
@@ -617,6 +654,7 @@ resource "azurerm_virtual_machine" "sqlvm2" {
   resource_group_name   = azurerm_resource_group.RG.name
   network_interface_ids = [azurerm_network_interface.sqlnic2.id]
   vm_size               = "Standard_B2s"
+  availability_set_id = azurerm_availability_set.avs1.id
 
   storage_image_reference {
     publisher = "MicrosoftSQLServer"
@@ -626,7 +664,7 @@ resource "azurerm_virtual_machine" "sqlvm2" {
   }
 
   storage_os_disk {
-    name              = "sqlstorage1-OSDisk"
+    name              = "team8sqlstorage2-OSDisk"
     caching           = "ReadOnly"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
@@ -712,12 +750,19 @@ resource "azurerm_network_interface_security_group_association" "example" {
 }
 */
 
+resource "azurerm_availability_set" "avs2" {
+  name                = "avs2-aset"
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+}
+
 resource "azurerm_virtual_machine" "sqlvm3" {
   name                  = "sqlservervm3"
   location              = var.location2
   resource_group_name   = azurerm_resource_group.RG.name
   network_interface_ids = [azurerm_network_interface.sqlnic3.id]
   vm_size               = "Standard_B2s"
+  availability_set_id = azurerm_availability_set.avs2.id
 
   storage_image_reference {
     publisher = "MicrosoftSQLServer"
@@ -727,7 +772,7 @@ resource "azurerm_virtual_machine" "sqlvm3" {
   }
 
   storage_os_disk {
-    name              = "sqlstorage3-OSDisk"
+    name              = "team8sqlstorage3-OSDisk"
     caching           = "ReadOnly"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
@@ -770,6 +815,7 @@ resource "azurerm_virtual_machine" "sqlvm4" {
   resource_group_name   = azurerm_resource_group.RG.name
   network_interface_ids = [azurerm_network_interface.sqlnic4.id]
   vm_size               = "Standard_B2s"
+  availability_set_id = azurerm_availability_set.avs2.id
 
   storage_image_reference {
     publisher = "MicrosoftSQLServer"
@@ -779,7 +825,7 @@ resource "azurerm_virtual_machine" "sqlvm4" {
   }
 
   storage_os_disk {
-    name              = "sqlstorage1-OSDisk"
+    name              = "team8sqlstorage4-OSDisk"
     caching           = "ReadOnly"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
