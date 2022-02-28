@@ -600,7 +600,7 @@ resource "azurerm_virtual_machine" "sqlvm1" {
 
 resource "azurerm_network_interface" "sqlnic2" {
   name                = "sqlservernic2"
-  location            = var.location2
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   ip_configuration {
