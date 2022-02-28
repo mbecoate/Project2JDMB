@@ -613,7 +613,7 @@ resource "azurerm_network_interface" "sqlnic2" {
 
 resource "azurerm_virtual_machine" "sqlvm2" {
   name                  = "sqlservervm2"
-  location              = var.location2
+  location              = var.location1
   resource_group_name   = azurerm_resource_group.RG.name
   network_interface_ids = [azurerm_network_interface.sqlnic2.id]
   vm_size               = "Standard_B2s"
@@ -644,12 +644,160 @@ resource "azurerm_virtual_machine" "sqlvm2" {
     enable_automatic_upgrades = true
   }
   
-  depends_on = [
-    azurerm_network_interface.sqlnic2
-  ]
-
 }
 
+
+
+#------------------------------
+#SQL Server Always On 1 in VNet2 (add LRS)
+#------------------------------
+
+/*resource "azurerm_subnet_network_security_group_association" "example" {
+  subnet_id                 = Module.Network.VNet1subnetsql.id
+  network_security_group_id = azurerm_network_security_group.example.id
+}
+
+resource "azurerm_network_security_group" "example" {
+  name                = "${var.prefix}-NSG"
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+}
+
+resource "azurerm_network_security_rule" "RDPRule" {
+  name                        = "RDPRule"
+  resource_group_name         = azurerm_resource_group.RG.name
+  priority                    = 1000
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = 3389
+  source_address_prefix       = "167.220.255.0/25"
+  destination_address_prefix  = "*"
+  network_security_group_name = azurerm_network_security_group.example.name
+}
+
+resource "azurerm_network_security_rule" "MSSQLRule" {
+  name                        = "MSSQLRule"
+  resource_group_name         = azurerm_resource_group.RG.name
+  priority                    = 1001
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = 1433
+  source_address_prefix       = "167.220.255.0/25"
+  destination_address_prefix  = "*"
+  network_security_group_name = azurerm_network_security_group.example.name
+}
+*/
+
+resource "azurerm_network_interface" "sqlnic3" {
+  name                = "sqlservernic3"
+  location            = var.location2
+  resource_group_name = azurerm_resource_group.RG.name
+
+  ip_configuration {
+    name                          = "sqlipconfiguration1"
+    subnet_id                     = module.Network.v2subnetsql.id
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.1.4.7"
+  }
+}
+
+/*
+resource "azurerm_network_interface_security_group_association" "example" {
+  network_interface_id      = azurerm_network_interface.example.id
+  network_security_group_id = azurerm_network_security_group.example.id
+}
+*/
+
+resource "azurerm_virtual_machine" "sqlvm3" {
+  name                  = "sqlservervm3"
+  location              = var.location2
+  resource_group_name   = azurerm_resource_group.RG.name
+  network_interface_ids = [azurerm_network_interface.sqlnic3.id]
+  vm_size               = "Standard_B2s"
+
+  storage_image_reference {
+    publisher = "MicrosoftSQLServer"
+    offer     = "SQL2017-WS2016"
+    sku       = "SQLDEV"
+    version   = "latest"
+  }
+
+  storage_os_disk {
+    name              = "sqlstorage3-OSDisk"
+    caching           = "ReadOnly"
+    create_option     = "FromImage"
+    managed_disk_type = "Premium_LRS"
+  }
+
+  os_profile {
+    computer_name  = "sqlservervm"
+    admin_username = "azureuser"
+    admin_password = "Adminpassword*"
+  }
+
+  os_profile_windows_config {
+    timezone                  = "Eastern Standard Time"
+    provision_vm_agent        = true
+    enable_automatic_upgrades = true
+  }
+}
+
+
+#------------------------------
+#SQL Server Always On #2 in Vnet2
+#------------------------------
+
+resource "azurerm_network_interface" "sqlnic4" {
+  name                = "sqlservernic4"
+  location            = var.location2
+  resource_group_name = azurerm_resource_group.RG.name
+
+  ip_configuration {
+    name                          = "sqlipconfiguration4"
+    subnet_id                     = module.Network.v2subnetsql.id
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.1.4.8"
+  }
+}
+
+resource "azurerm_virtual_machine" "sqlvm4" {
+  name                  = "sqlservervm4"
+  location              = var.location2
+  resource_group_name   = azurerm_resource_group.RG.name
+  network_interface_ids = [azurerm_network_interface.sqlnic4.id]
+  vm_size               = "Standard_B2s"
+
+  storage_image_reference {
+    publisher = "MicrosoftSQLServer"
+    offer     = "SQL2017-WS2016"
+    sku       = "SQLDEV"
+    version   = "latest"
+  }
+
+  storage_os_disk {
+    name              = "sqlstorage1-OSDisk"
+    caching           = "ReadOnly"
+    create_option     = "FromImage"
+    managed_disk_type = "Premium_LRS"
+  }
+
+  os_profile {
+    computer_name  = "sqlservervm"
+    admin_username = "azureuser"
+    admin_password = "Adminpassword*"
+  }
+
+  os_profile_windows_config {
+    timezone                  = "Eastern Standard Time"
+    provision_vm_agent        = true
+    enable_automatic_upgrades = true
+  }
+
+}
 
 
 
@@ -784,7 +932,7 @@ resource "azurerm_application_gateway" "vappgateway1" {
   }
 
   backend_address_pool {
-    name = "appservice1"
+    name = local.backend_address_pool_name
     fqdns = ["${azurerm_app_service.appservice1.name}.azurewebsites.net"]
     ip_addresses = []
   }
