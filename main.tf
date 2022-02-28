@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "RG" {
   name     = var.rg_name
-  location = var.location
+  location = var.location1
   tags = var.tags
 }
 
@@ -14,6 +14,10 @@ module "Network" {
   rg = var.rg_name
   #use default settings of network
   tags = var.tags
+
+  depends_on = [
+    azurerm_resource_group.RG
+  ]
 }
 
 
@@ -62,7 +66,7 @@ resource "azurerm_traffic_manager_azure_endpoint" "ep2-external-endpoint" {
 
 resource "azurerm_public_ip" "BastionPIP" {
   name                = "BPIP"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
   allocation_method   = "Static"
   sku                 = "Standard"
@@ -70,7 +74,7 @@ resource "azurerm_public_ip" "BastionPIP" {
 
 resource "azurerm_bastion_host" "BastionHost" {
   name                = "B1Host"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   ip_configuration {
@@ -88,7 +92,7 @@ resource "azurerm_bastion_host" "BastionHost" {
 # VMSS Business
 resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
   name                = var.Vnet1businessVM
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
   upgrade_policy_mode = "Manual"
 
@@ -210,7 +214,7 @@ resource "azurerm_lb_probe" "V1PHealthProbe1" {
 #We want to make our Load Balancer Internal (Private) to go to our Busines Tier VMSS
 resource "azurerm_lb" "V1WebtoBusinessLB" {
   name                = "V1WbLB"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   frontend_ip_configuration {
@@ -266,7 +270,7 @@ resource "azurerm_lb_probe" "V1HealthProbe2" {
 #We want to make our Load Balancer Internal (Private) to go to our SQL database
 resource "azurerm_lb" "V1BusinesstoSQLLB2" {
   name                = "V1BSQlLB2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   frontend_ip_configuration {
@@ -282,6 +286,21 @@ resource "azurerm_lb_backend_address_pool" "V1bpepool3" {
   loadbalancer_id     = azurerm_lb.V1BusinesstoSQLLB2.id
   name                = "V1BackEndAddressPool3"
 }
+
+resource "azurerm_lb_backend_address_pool_address" "address1" {
+  name                    = "address1"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  virtual_network_id      = module.Network.Vnet1.id
+  ip_address              = "10.0.4.7"
+}
+
+resource "azurerm_lb_backend_address_pool_address" "address2" {
+  name                    = "address2"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  virtual_network_id      = module.Network.Vnet1.id
+  ip_address              = "10.0.4.8"
+}
+
 resource "azurerm_lb_rule" "V1bustosqllbrule1" {
   resource_group_name            = azurerm_resource_group.RG.name
   loadbalancer_id                = azurerm_lb.V1BusinesstoSQLLB2.id
@@ -315,7 +334,7 @@ resource "azurerm_lb_probe" "V1HealthProbe3" {
 
 resource "azurerm_public_ip" "BastionPIP2" {
   name                = "BPIP2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
   allocation_method   = "Static"
   sku                 = "Standard"
@@ -323,7 +342,7 @@ resource "azurerm_public_ip" "BastionPIP2" {
 
 resource "azurerm_bastion_host" "BastionHost2" {
   name                = "B2Host"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
 
   ip_configuration {
@@ -340,7 +359,7 @@ resource "azurerm_bastion_host" "BastionHost2" {
 # VMSS Business
 resource "azurerm_virtual_machine_scale_set" "V2VMSSbusiness" {
   name                = var.Vnet2businessVM
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
   upgrade_policy_mode = "Manual"
 
@@ -398,7 +417,7 @@ resource "azurerm_virtual_machine_scale_set" "V2VMSSbusiness" {
 #We want to make our Load Balancer Internal (Private) to go to our Busines Tier VMSS
 resource "azurerm_lb" "V2WebtoBusinessLB" {
   name                = "V2WbLB"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
 
   frontend_ip_configuration {
@@ -454,7 +473,7 @@ resource "azurerm_lb_probe" "V2HealthProbe2" {
 #We want to make our Load Balancer Internal (Private) to go to our SQL database
 resource "azurerm_lb" "V2BusinesstoSQLLB2" {
   name                = "V2BSQlLB2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
 
   frontend_ip_configuration {
@@ -470,6 +489,21 @@ resource "azurerm_lb_backend_address_pool" "V2bpepool3" {
   loadbalancer_id     = azurerm_lb.V2BusinesstoSQLLB2.id
   name                = "V2BackEndAddressPool3"
 }
+
+resource "azurerm_lb_backend_address_pool_address" "address3" {
+  name                    = "address3"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  virtual_network_id      = module.Network.Vnet2.id
+  ip_address              = "10.1.4.7"
+}
+
+resource "azurerm_lb_backend_address_pool_address" "address4" {
+  name                    = "address4"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  virtual_network_id      = module.Network.Vnet2.id
+  ip_address              = "10.1.4.8"
+}
+
 resource "azurerm_lb_rule" "V2bustosqllbrule1" {
   resource_group_name            = azurerm_resource_group.RG.name
   loadbalancer_id                = azurerm_lb.V2BusinesstoSQLLB2.id
@@ -537,14 +571,14 @@ resource "azurerm_network_security_rule" "MSSQLRule" {
 
 resource "azurerm_network_interface" "sqlnic1" {
   name                = "sqlservernic1"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   ip_configuration {
     name                          = "sqlipconfiguration1"
     subnet_id                     = module.Network.v1subnetsql.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.4.6"
+    private_ip_address            = "10.0.4.7"
   }
 }
 
@@ -555,12 +589,19 @@ resource "azurerm_network_interface_security_group_association" "example" {
 }
 */
 
+resource "azurerm_availability_set" "avs1" {
+  name                = "avs1-aset"
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+}
+
 resource "azurerm_virtual_machine" "sqlvm1" {
   name                  = "sqlservervm1"
-  location              = azurerm_resource_group.RG.location
+  location              = var.location1
   resource_group_name   = azurerm_resource_group.RG.name
   network_interface_ids = [azurerm_network_interface.sqlnic1.id]
   vm_size               = "Standard_B2s"
+  availability_set_id = azurerm_availability_set.avs1.id
 
   storage_image_reference {
     publisher = "MicrosoftSQLServer"
@@ -570,7 +611,7 @@ resource "azurerm_virtual_machine" "sqlvm1" {
   }
 
   storage_os_disk {
-    name              = "sqlstorage1-OSDisk"
+    name              = "team8sqlstorage1-OSDisk"
     caching           = "ReadOnly"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
@@ -596,23 +637,24 @@ resource "azurerm_virtual_machine" "sqlvm1" {
 
 resource "azurerm_network_interface" "sqlnic2" {
   name                = "sqlservernic2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   ip_configuration {
     name                          = "sqlipconfiguration2"
     subnet_id                     = module.Network.v1subnetsql.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.4.7"
+    private_ip_address            = "10.0.4.8"
   }
 }
 
 resource "azurerm_virtual_machine" "sqlvm2" {
   name                  = "sqlservervm2"
-  location              = azurerm_resource_group.RG.location
+  location              = var.location1
   resource_group_name   = azurerm_resource_group.RG.name
   network_interface_ids = [azurerm_network_interface.sqlnic2.id]
   vm_size               = "Standard_B2s"
+  availability_set_id = azurerm_availability_set.avs1.id
 
   storage_image_reference {
     publisher = "MicrosoftSQLServer"
@@ -622,7 +664,115 @@ resource "azurerm_virtual_machine" "sqlvm2" {
   }
 
   storage_os_disk {
-    name              = "sqlstorage1-OSDisk"
+    name              = "team8sqlstorage2-OSDisk"
+    caching           = "ReadOnly"
+    create_option     = "FromImage"
+    managed_disk_type = "Premium_LRS"
+  }
+
+  os_profile {
+    computer_name  = "sqlservervm"
+    admin_username = "azureuser"
+    admin_password = "Adminpassword*"
+  }
+
+  os_profile_windows_config {
+    timezone                  = "Eastern Standard Time"
+    provision_vm_agent        = true
+    enable_automatic_upgrades = true
+  }
+  
+}
+
+
+
+#------------------------------
+#SQL Server Always On 1 in VNet2 (add LRS)
+#------------------------------
+
+/*resource "azurerm_subnet_network_security_group_association" "example" {
+  subnet_id                 = Module.Network.VNet1subnetsql.id
+  network_security_group_id = azurerm_network_security_group.example.id
+}
+
+resource "azurerm_network_security_group" "example" {
+  name                = "${var.prefix}-NSG"
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+}
+
+resource "azurerm_network_security_rule" "RDPRule" {
+  name                        = "RDPRule"
+  resource_group_name         = azurerm_resource_group.RG.name
+  priority                    = 1000
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = 3389
+  source_address_prefix       = "167.220.255.0/25"
+  destination_address_prefix  = "*"
+  network_security_group_name = azurerm_network_security_group.example.name
+}
+
+resource "azurerm_network_security_rule" "MSSQLRule" {
+  name                        = "MSSQLRule"
+  resource_group_name         = azurerm_resource_group.RG.name
+  priority                    = 1001
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = 1433
+  source_address_prefix       = "167.220.255.0/25"
+  destination_address_prefix  = "*"
+  network_security_group_name = azurerm_network_security_group.example.name
+}
+*/
+
+resource "azurerm_network_interface" "sqlnic3" {
+  name                = "sqlservernic3"
+  location            = var.location2
+  resource_group_name = azurerm_resource_group.RG.name
+
+  ip_configuration {
+    name                          = "sqlipconfiguration1"
+    subnet_id                     = module.Network.v2subnetsql.id
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.1.4.7"
+  }
+}
+
+/*
+resource "azurerm_network_interface_security_group_association" "example" {
+  network_interface_id      = azurerm_network_interface.example.id
+  network_security_group_id = azurerm_network_security_group.example.id
+}
+*/
+
+resource "azurerm_availability_set" "avs2" {
+  name                = "avs2-aset"
+  location            = azurerm_resource_group.RG.location
+  resource_group_name = azurerm_resource_group.RG.name
+}
+
+resource "azurerm_virtual_machine" "sqlvm3" {
+  name                  = "sqlservervm3"
+  location              = var.location2
+  resource_group_name   = azurerm_resource_group.RG.name
+  network_interface_ids = [azurerm_network_interface.sqlnic3.id]
+  vm_size               = "Standard_B2s"
+  availability_set_id = azurerm_availability_set.avs2.id
+
+  storage_image_reference {
+    publisher = "MicrosoftSQLServer"
+    offer     = "SQL2017-WS2016"
+    sku       = "SQLDEV"
+    version   = "latest"
+  }
+
+  storage_os_disk {
+    name              = "team8sqlstorage3-OSDisk"
     caching           = "ReadOnly"
     create_option     = "FromImage"
     managed_disk_type = "Premium_LRS"
@@ -642,6 +792,59 @@ resource "azurerm_virtual_machine" "sqlvm2" {
 }
 
 
+#------------------------------
+#SQL Server Always On #2 in Vnet2
+#------------------------------
+
+resource "azurerm_network_interface" "sqlnic4" {
+  name                = "sqlservernic4"
+  location            = var.location2
+  resource_group_name = azurerm_resource_group.RG.name
+
+  ip_configuration {
+    name                          = "sqlipconfiguration4"
+    subnet_id                     = module.Network.v2subnetsql.id
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.1.4.8"
+  }
+}
+
+resource "azurerm_virtual_machine" "sqlvm4" {
+  name                  = "sqlservervm4"
+  location              = var.location2
+  resource_group_name   = azurerm_resource_group.RG.name
+  network_interface_ids = [azurerm_network_interface.sqlnic4.id]
+  vm_size               = "Standard_B2s"
+  availability_set_id = azurerm_availability_set.avs2.id
+
+  storage_image_reference {
+    publisher = "MicrosoftSQLServer"
+    offer     = "SQL2017-WS2016"
+    sku       = "SQLDEV"
+    version   = "latest"
+  }
+
+  storage_os_disk {
+    name              = "team8sqlstorage4-OSDisk"
+    caching           = "ReadOnly"
+    create_option     = "FromImage"
+    managed_disk_type = "Premium_LRS"
+  }
+
+  os_profile {
+    computer_name  = "sqlservervm"
+    admin_username = "azureuser"
+    admin_password = "Adminpassword*"
+  }
+
+  os_profile_windows_config {
+    timezone                  = "Eastern Standard Time"
+    provision_vm_agent        = true
+    enable_automatic_upgrades = true
+  }
+
+}
+
 
 
 #----------------------------
@@ -650,7 +853,7 @@ resource "azurerm_virtual_machine" "sqlvm2" {
 
 resource "azurerm_app_service_plan" "appserviceplan1" {
   name                = "appservice1"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
 
   sku {
@@ -661,7 +864,7 @@ resource "azurerm_app_service_plan" "appserviceplan1" {
 
 resource "azurerm_app_service" "appservice1" {
   name                = "app-service1"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
   app_service_plan_id = azurerm_app_service_plan.appserviceplan1.id
 
@@ -690,7 +893,7 @@ resource "azurerm_app_service" "appservice1" {
 
 resource "azurerm_app_service_plan" "appserviceplan2" {
   name                = "appservice2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
 
   sku {
@@ -701,7 +904,7 @@ resource "azurerm_app_service_plan" "appserviceplan2" {
 
 resource "azurerm_app_service" "appservice2" {
   name                = "app-service2"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
   app_service_plan_id = azurerm_app_service_plan.appserviceplan2.id
 
@@ -732,8 +935,14 @@ resource "azurerm_app_service" "appservice2" {
 resource "azurerm_public_ip" "vappgatewaypip1" {
   name                = "vappgateway1-pip"
   resource_group_name = azurerm_resource_group.RG.name
+<<<<<<< HEAD
   location            = azurerm_resource_group.RG.location
   allocation_method   = "Static"
+=======
+  location            = var.location1
+  allocation_method   = "Dynamic"
+  domain_name_label = "vappgateway1"
+>>>>>>> 51e60233d0a017cf64691e63d641c99311876590
 }
 
 #&nbsp;since these variables are re-used - a locals block makes this more maintainable
@@ -750,7 +959,7 @@ locals {
 resource "azurerm_application_gateway" "vappgateway1" {
   name                = "v-appgateway1"
   resource_group_name = azurerm_resource_group.RG.name
-  location            = azurerm_resource_group.RG.location
+  location            = var.location1
 
   sku {
     name     = "Standard_Small"
@@ -774,7 +983,7 @@ resource "azurerm_application_gateway" "vappgateway1" {
   }
 
   backend_address_pool {
-    name = "appservice1"
+    name = local.backend_address_pool_name
     fqdns = ["${azurerm_app_service.appservice1.name}.azurewebsites.net"]
     ip_addresses = []
   }
@@ -816,8 +1025,14 @@ resource "azurerm_application_gateway" "vappgateway1" {
 resource "azurerm_public_ip" "vappgatewaypip2" {
   name                = "vappgateway2-pip"
   resource_group_name = azurerm_resource_group.RG.name
+<<<<<<< HEAD
   location            = azurerm_resource_group.RG.location
   allocation_method   = "Static"
+=======
+  location            = var.location2
+  allocation_method   = "Dynamic"
+  domain_name_label = "vappgateway2"
+>>>>>>> 51e60233d0a017cf64691e63d641c99311876590
 }
 
 #&nbsp;since these variables are re-used - a locals block makes this more maintainable
@@ -834,7 +1049,7 @@ locals {
 resource "azurerm_application_gateway" "vappgateway2" {
   name                = "v-appgateway2"
   resource_group_name = azurerm_resource_group.RG.name
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
 
   sku {
     name     = "Standard_Small"
@@ -859,6 +1074,7 @@ resource "azurerm_application_gateway" "vappgateway2" {
 
   backend_address_pool {
     name = local.backend_address_pool_name2
+    fqdns = ["${azurerm_app_service.appservice2.name}.azurewebsites.net"]
   }
 
   backend_http_settings {
