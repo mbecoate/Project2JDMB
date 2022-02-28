@@ -47,11 +47,11 @@ resource "azurerm_traffic_manager_azure_endpoint" "ep1-external-endpoint" {
   weight             = 100
   priority            = 1
 }
-resource "azurerm_traffic_manager_azure_endpoint" "ep2" {
-  name               = "lb2-endpoint"
-  profile_name         = azurerm_traffic_manager_profile.t8p2-tm.name
+resource "azurerm_traffic_manager_azure_endpoint" "ep2-external-endpoint" {
+  name               = "lb2-external-endpoint"
+  profile_id         = azurerm_traffic_manager_profile.t8p2-tm.id
   target_resource_id = azurerm_public_ip.vappgatewaypip2.id
-  weight             = 100
+  weight             = 101
   priority            = 2
 }
 
@@ -660,7 +660,7 @@ resource "azurerm_app_service_plan" "appserviceplan1" {
 }
 
 resource "azurerm_app_service" "appservice1" {
-  name                = "app_service1"
+  name                = "app-service1"
   location            = azurerm_resource_group.RG.location
   resource_group_name = azurerm_resource_group.RG.name
   app_service_plan_id = azurerm_app_service_plan.appserviceplan1.id
@@ -700,7 +700,7 @@ resource "azurerm_app_service_plan" "appserviceplan2" {
 }
 
 resource "azurerm_app_service" "appservice2" {
-  name                = "app_service2"
+  name                = "app-service2"
   location            = azurerm_resource_group.RG.location
   resource_group_name = azurerm_resource_group.RG.name
   app_service_plan_id = azurerm_app_service_plan.appserviceplan2.id
