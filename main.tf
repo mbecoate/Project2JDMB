@@ -135,7 +135,7 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
     ip_configuration {
       name                                   = "V1BusinessIPConfiguration"
       primary                                = true
-      subnet_id                              = module.Network.v1subnetbusiness
+      subnet_id                              = module.Network.v1subnetbusiness.id
       load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.V1bpepool2.id]
       load_balancer_inbound_nat_rules_ids    = []
     }
