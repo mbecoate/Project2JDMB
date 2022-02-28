@@ -51,7 +51,7 @@ variable "V1Bastionsubnet" {
 }
 variable "V1Bastionsubnet1_address" {
   type = list(string)
-  default = [ "10.0.1.0/16" ]
+  default = [ "10.0.1.0/24" ]
 }
 variable "V2Bastionsubnet" {
   type = string
@@ -59,7 +59,7 @@ variable "V2Bastionsubnet" {
 }
 variable "V2Bastionsubnet1_address" {
   type = list(string)
-  default = [ "10.1.1.0/16" ]
+  default = [ "10.1.1.0/24" ]
 }
 
 
@@ -73,11 +73,11 @@ variable "v2subnetbusiness" {
 }
 variable "v1subnetbusiness_address" {
   type = list(string)
-  default = [ "10.0.3.0/16" ]
+  default = [ "10.0.3.0/24" ]
 }
 variable "v2subnetbusiness_address" {
   type = list(string)
-  default = [ "10.1.3.0/16" ]
+  default = [ "10.1.3.0/24" ]
 }
 
 
@@ -91,11 +91,11 @@ variable "v2subnetsql" {
 }
 variable "v1subnetsql_address" {
   type = list(string)
-  default = [ "10.0.4.0/16" ]
+  default = [ "10.0.4.0/24" ]
 }
 variable "v2subnetsql_address" {
   type = list(string)
-  default = [ "10.1.4.0/16" ]
+  default = [ "10.1.4.0/24" ]
 }
 
 
@@ -109,11 +109,11 @@ variable "v1besubnetVAG" {
 }
 variable "v1fesubnetVAG_address" {
   type = list(string)
-  default = [ "10.0.5.0/16" ]
+  default = [ "10.0.5.0/24" ]
 }
 variable "v1besubnetVAG_address" {
   type = list(string)
-  default = [ "10.0.6.0/16" ]
+  default = [ "10.0.6.0/24" ]
 }
 
 
@@ -127,10 +127,10 @@ variable "v2besubnetVAG" {
 }
 variable "v2fesubnetVAG_address" {
   type = list(string)
-  default = [ "10.1.5.0/16" ]
+  default = [ "10.1.5.0/24" ]
 }
 variable "v2besubnetVAG_address" {
   type = list(string)
-  default = [ "10.1.6.0/16" ]
+  default = [ "10.1.6.0/24" ]
 }
 
