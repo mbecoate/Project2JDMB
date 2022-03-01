@@ -983,7 +983,6 @@ resource "azurerm_application_gateway" "vappgateway1" {
   backend_address_pool {
     name = local.backend_address_pool_name
     fqdns = ["${azurerm_app_service.appservice1.name}.azurewebsites.net"]
-    ip_addresses = []
   }
 
   backend_http_settings {
@@ -1004,7 +1003,7 @@ resource "azurerm_application_gateway" "vappgateway1" {
 
   request_routing_rule {
     name                       = local.request_routing_rule_name
-    rule_type                  = "Basic"
+    rule_type                  = "Multi-site"
     http_listener_name         = local.listener_name
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
@@ -1088,7 +1087,7 @@ resource "azurerm_application_gateway" "vappgateway2" {
 
   request_routing_rule {
     name                       = local.request_routing_rule_name2
-    rule_type                  = "Basic"
+    rule_type                  = "Multi-site"
     http_listener_name         = local.listener_name2
     backend_address_pool_name  = local.backend_address_pool_name2
     backend_http_settings_name = local.http_setting_name2
