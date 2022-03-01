@@ -743,6 +743,7 @@ resource "azurerm_network_interface" "sqlnic3" {
   }
 }
 
+
 /*
 resource "azurerm_network_interface_security_group_association" "example" {
   network_interface_id      = azurerm_network_interface.example.id
