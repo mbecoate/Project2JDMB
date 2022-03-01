@@ -7,8 +7,9 @@ tags = {
 
 
 #resource group variables
-rg_name  = "Team8_Project2"
-location = "eastus"
+rg_name  = "Team8_Project2_2"
+location1 = "eastus"
+location2 = "centralus"
 
 
 #Vault Variables

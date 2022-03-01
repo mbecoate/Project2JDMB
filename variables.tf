@@ -9,10 +9,13 @@ variable "tags" {
 variable "rg_name" {
   type = string
 }
-variable "location" {
+
+variable "location1" {
   type = string
 }
-
+variable "location2" {
+  type = string
+}
 
 variable "secret_vault_name" {
   type = string

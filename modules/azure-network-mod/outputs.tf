@@ -2,10 +2,16 @@
 output "Vnet1" {
   description = "The first vnet"
   value = azurerm_virtual_network.Vnet1
+  depends_on = [
+    azurerm_virtual_network.Vnet1
+  ]
 }
 output "Vnet2" {
   description = "The first vnet"
   value = azurerm_virtual_network.Vnet2
+  depends_on = [
+    azurerm_virtual_network.Vnet2
+  ]
 }
 
 output "V1Bastionsubnet1" {

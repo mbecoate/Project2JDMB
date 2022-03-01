@@ -743,6 +743,7 @@ resource "azurerm_network_interface" "sqlnic3" {
   }
 }
 
+
 /*
 resource "azurerm_network_interface_security_group_association" "example" {
   network_interface_id      = azurerm_network_interface.example.id
@@ -752,7 +753,7 @@ resource "azurerm_network_interface_security_group_association" "example" {
 
 resource "azurerm_availability_set" "avs2" {
   name                = "avs2-aset"
-  location            = azurerm_resource_group.RG.location
+  location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
 }
 
