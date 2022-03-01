@@ -13,7 +13,6 @@ variable "location" {
   type = string
 }
 
-
 variable "secret_vault_name" {
   type = string
 }
