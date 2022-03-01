@@ -271,7 +271,7 @@ resource "azurerm_lb_probe" "V1HealthProbe2" {
 resource "azurerm_lb" "V1BusinesstoSQLLB2" {
   name                = "V1BSQlLB2"
   location            = var.location1
-  resource_group_name = "${azurerm_resource_group.RG.name}"
+  resource_group_name = azurerm_resource_group.RG.name
   sku = "Standard"
 
   frontend_ip_configuration {
@@ -475,7 +475,7 @@ resource "azurerm_lb_probe" "V2HealthProbe2" {
 resource "azurerm_lb" "V2BusinesstoSQLLB2" {
   name                = "V2BSQlLB2"
   location            = var.location2
-  resource_group_name = "${azurerm_resource_group.RG.name}"
+  resource_group_name = azurerm_resource_group.RG.name
   sku = "Standard"
 
   frontend_ip_configuration {
