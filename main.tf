@@ -290,14 +290,14 @@ resource "azurerm_lb_backend_address_pool" "V1bpepool3" {
 
 resource "azurerm_lb_backend_address_pool_address" "address1" {
   name                    = "address1"
-  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V1bpepool3.id
   virtual_network_id      = module.Network.Vnet1.id
   ip_address              = "10.0.4.7"
 }
 
 resource "azurerm_lb_backend_address_pool_address" "address2" {
   name                    = "address2"
-  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V1bpepool3.id
   virtual_network_id      = module.Network.Vnet1.id
   ip_address              = "10.0.4.8"
 }
