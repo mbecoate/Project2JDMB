@@ -272,6 +272,7 @@ resource "azurerm_lb" "V1BusinesstoSQLLB2" {
   name                = "V1BSQlLB2"
   location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
+  sku = "Standard"
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress2"
@@ -475,6 +476,7 @@ resource "azurerm_lb" "V2BusinesstoSQLLB2" {
   name                = "V2BSQlLB2"
   location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
+  sku = "Standard"
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress2"
