@@ -987,6 +987,7 @@ resource "azurerm_application_gateway" "vappgateway1" {
 
   backend_http_settings {
     name                  = local.http_setting_name
+    pick_host_name_from_backend_address = true
     cookie_based_affinity = "Disabled"
     path                  = "/path1/"
     port                  = 80
@@ -999,11 +1000,12 @@ resource "azurerm_application_gateway" "vappgateway1" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Http"
+    host_name = "*.azurewebsites.net"
   }
 
   request_routing_rule {
     name                       = local.request_routing_rule_name
-    rule_type                  = "Multi-site"
+    rule_type                  = "Basic"
     http_listener_name         = local.listener_name
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
@@ -1071,6 +1073,7 @@ resource "azurerm_application_gateway" "vappgateway2" {
 
   backend_http_settings {
     name                  = local.http_setting_name2
+    pick_host_name_from_backend_address = true
     cookie_based_affinity = "Disabled"
     path                  = "/path1/"
     port                  = 80
@@ -1083,11 +1086,12 @@ resource "azurerm_application_gateway" "vappgateway2" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name2
     frontend_port_name             = local.frontend_port_name2
     protocol                       = "Http"
+    host_name = "*.azurewebsites.net"
   }
 
   request_routing_rule {
     name                       = local.request_routing_rule_name2
-    rule_type                  = "Multi-site"
+    rule_type                  = "Basic"
     http_listener_name         = local.listener_name2
     backend_address_pool_name  = local.backend_address_pool_name2
     backend_http_settings_name = local.http_setting_name2
