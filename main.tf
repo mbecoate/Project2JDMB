@@ -900,6 +900,7 @@ resource "azurerm_application_gateway" "vappgateway3" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name3
+    subnet_id = module.Network.v2subnetvagbe.id
     private_ip_address_allocation = "Static"
     private_ip_address = "10.0.6.6"
   }
@@ -992,6 +993,7 @@ resource "azurerm_application_gateway" "vappgateway4" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name4
+    subnet_id = module.Network.v2subnetvagbe.id
     private_ip_address_allocation = "Static"
     private_ip_address = "10.1.6.6"
   }
