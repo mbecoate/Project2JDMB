@@ -1058,7 +1058,7 @@ resource "azurerm_application_gateway" "vappgateway1" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Http"
-    host_name = "${azurerm_app_service.appservice2.name}.azurewebsites.net"
+    //host_name = "${azurerm_app_service.appservice2.name}.azurewebsites.net"
   }
 
   request_routing_rule {
@@ -1158,7 +1158,7 @@ resource "azurerm_application_gateway" "vappgateway2" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name2
     frontend_port_name             = local.frontend_port_name2
     protocol                       = "Http"
-    host_name = "${azurerm_app_service.appservice2.name}.azurewebsites.net"
+    //host_name = "${azurerm_app_service.appservice2.name}.azurewebsites.net"
   }
 
   request_routing_rule {
