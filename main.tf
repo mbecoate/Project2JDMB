@@ -261,8 +261,8 @@ resource "azurerm_lb_probe" "V1HealthProbe2" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V1WebtoBusinessLB.id
   name                = "http-probe"
-  protocol            = "Http"
-  request_path        = "/health"
+  //protocol            = "Http"
+  //request_path        = "/health"
   port                = 80
 }
 
@@ -339,7 +339,7 @@ resource "azurerm_lb_probe" "V1HealthProbe3" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V1BusinesstoSQLLB2.id
   name                = "http-probe"
-  protocol            = "Http"
+  //protocol            = "Http"
   //request_path        = "/health"
   port                = 80
 }
@@ -489,8 +489,8 @@ resource "azurerm_lb_probe" "V2HealthProbe2" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V2WebtoBusinessLB.id
   name                = "http-probe"
-  protocol            = "Http"
-  request_path        = "/health"
+  //protocol            = "Http"
+  //request_path        = "/health"
   port                = 80
 }
 
@@ -567,7 +567,7 @@ resource "azurerm_lb_probe" "V2HealthProbe3" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V2BusinesstoSQLLB2.id
   name                = "http-probe"
-  protocol            = "Http"
+  //protocol            = "Http"
   //request_path        = "/health"
   port                = 80
 }
