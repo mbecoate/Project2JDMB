@@ -147,68 +147,6 @@ resource "azurerm_virtual_machine_scale_set" "V1VMSSbusiness" {
 }
 
 
-#change to app services or remove?
-#We want to make our Load Balancer Public to go to our Web Tier VMSS
-/*
-resource "azurerm_public_ip" "V1toWebPIP" {
-  name                = "PublicIPForLB1"
-  location            = "east US"
-  resource_group_name = azurerm_resource_group.RG.name
-  allocation_method   = "Static"
-  domain_name_label   = "lb1-public-ip"
-}
-resource "azurerm_lb" "V1toWebLB" {
-  name                = "V1WLB"
-  location            = azurerm_resource_group.RG.location
-  resource_group_name = azurerm_resource_group.RG.name
-
-  frontend_ip_configuration {
-    name                 = "PublicIPAddress1"
-    public_ip_address_id = azurerm_public_ip.V1toWebPIP.id
-    
-  }
-}
-resource "azurerm_lb_backend_address_pool" "V1Pbpepool1" {
-  resource_group_name = azurerm_resource_group.RG.name
-  loadbalancer_id     = azurerm_lb.V1toWebLB.id
-  name                = "V1PBackEndAddressPool1"
-}
-resource "azurerm_lb_rule" "V1lbrule1" {
-  resource_group_name            = azurerm_resource_group.RG.name
-  loadbalancer_id                = azurerm_lb.V1toWebLB.id
-  name                           = "ssh"
-  protocol                       = "Tcp"
-  frontend_port                  = 22
-  backend_port                   = 22
-  frontend_ip_configuration_name = "PublicIPAddress1"
-}
-resource "azurerm_lb_rule" "V1lbrule2" {
-  resource_group_name            = azurerm_resource_group.RG.name
-  loadbalancer_id                = azurerm_lb.V1toWebLB.id
-  name                           = "sql"
-  protocol                       = "Tcp"
-  frontend_port                  = 1433
-  backend_port                   = 1433
-  frontend_ip_configuration_name = "PublicIPAddress1"
-}
-resource "azurerm_lb_rule" "V1lbrule3" {
-  resource_group_name            = azurerm_resource_group.RG.name
-  loadbalancer_id                = azurerm_lb.V1toWebLB.id
-  name                           = "web"
-  protocol                       = "Tcp"
-  frontend_port                  = 80
-  backend_port                   = 80
-  frontend_ip_configuration_name = "PublicIPAddress1"
-}
-resource "azurerm_lb_probe" "V1PHealthProbe1" {
-  resource_group_name = azurerm_resource_group.RG.name
-  loadbalancer_id     = azurerm_lb.V1toWebLB.id
-  name                = "http-probe"
-  protocol            = "Http"
-  request_path        = "/health"
-  port                = 80
-}
-*/
 
 
 #We want to make our Load Balancer Internal (Private) to go to our Busines Tier VMSS
@@ -261,17 +199,18 @@ resource "azurerm_lb_probe" "V1HealthProbe2" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V1WebtoBusinessLB.id
   name                = "http-probe"
-  protocol            = "Http"
-  request_path        = "/health"
+  //protocol            = "Http"
+  //request_path        = "/health"
   port                = 80
 }
 
-
+/*
 #We want to make our Load Balancer Internal (Private) to go to our SQL database
 resource "azurerm_lb" "V1BusinesstoSQLLB2" {
   name                = "V1BSQlLB2"
   location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
+  sku = "Standard"
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress2"
@@ -289,14 +228,14 @@ resource "azurerm_lb_backend_address_pool" "V1bpepool3" {
 
 resource "azurerm_lb_backend_address_pool_address" "address1" {
   name                    = "address1"
-  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V1bpepool3.id
   virtual_network_id      = module.Network.Vnet1.id
   ip_address              = "10.0.4.7"
 }
 
 resource "azurerm_lb_backend_address_pool_address" "address2" {
   name                    = "address2"
-  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V1bpepool3.id
   virtual_network_id      = module.Network.Vnet1.id
   ip_address              = "10.0.4.8"
 }
@@ -309,16 +248,40 @@ resource "azurerm_lb_rule" "V1bustosqllbrule1" {
   frontend_port                  = 1433
   backend_port                   = 1433
   frontend_ip_configuration_name = "PrivateIPAddress2"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V1bpepool3.id
+  probe_id = azurerm_lb_probe.V1HealthProbe3.id
+}
+resource "azurerm_lb_rule" "V1bustosqllbrule2" {
+  resource_group_name            = azurerm_resource_group.RG.name
+  loadbalancer_id                = azurerm_lb.V1BusinesstoSQLLB2.id
+  name                           = "ssh"
+  protocol                       = "Tcp"
+  frontend_port                  = 22
+  backend_port                   = 22
+  frontend_ip_configuration_name = "PrivateIPAddress2"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V1bpepool3.id
+  probe_id = azurerm_lb_probe.V1HealthProbe3.id
+}
+resource "azurerm_lb_rule" "V1bustosqllbrule3" {
+  resource_group_name            = azurerm_resource_group.RG.name
+  loadbalancer_id                = azurerm_lb.V1BusinesstoSQLLB2.id
+  name                           = "web"
+  protocol                       = "Tcp"
+  frontend_port                  = 80
+  backend_port                   = 80
+  frontend_ip_configuration_name = "PrivateIPAddress2"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V1bpepool3.id
+  probe_id = azurerm_lb_probe.V1HealthProbe3.id
 }
 resource "azurerm_lb_probe" "V1HealthProbe3" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V1BusinesstoSQLLB2.id
   name                = "http-probe"
-  protocol            = "Http"
-  request_path        = "/health"
+  //protocol            = "Http"
+  //request_path        = "/health"
   port                = 80
 }
-
+*/
 
 
 
@@ -464,17 +427,18 @@ resource "azurerm_lb_probe" "V2HealthProbe2" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V2WebtoBusinessLB.id
   name                = "http-probe"
-  protocol            = "Http"
-  request_path        = "/health"
+  //protocol            = "Http"
+  //request_path        = "/health"
   port                = 80
 }
 
-
+/*
 #We want to make our Load Balancer Internal (Private) to go to our SQL database
 resource "azurerm_lb" "V2BusinesstoSQLLB2" {
   name                = "V2BSQlLB2"
   location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
+  sku = "Standard"
 
   frontend_ip_configuration {
     name                 = "PrivateIPAddress2"
@@ -512,339 +476,44 @@ resource "azurerm_lb_rule" "V2bustosqllbrule1" {
   frontend_port                  = 1433
   backend_port                   = 1433
   frontend_ip_configuration_name = "PrivateIPAddress2"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  probe_id = azurerm_lb_probe.V2HealthProbe3.id
+}
+resource "azurerm_lb_rule" "V2bustosqllbrule2" {
+  resource_group_name            = azurerm_resource_group.RG.name
+  loadbalancer_id                = azurerm_lb.V2BusinesstoSQLLB2.id
+  name                           = "ssh"
+  protocol                       = "Tcp"
+  frontend_port                  = 22
+  backend_port                   = 22
+  frontend_ip_configuration_name = "PrivateIPAddress2"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  probe_id = azurerm_lb_probe.V2HealthProbe3.id
+}
+resource "azurerm_lb_rule" "V2bustosqllbrule3" {
+  resource_group_name            = azurerm_resource_group.RG.name
+  loadbalancer_id                = azurerm_lb.V2BusinesstoSQLLB2.id
+  name                           = "web"
+  protocol                       = "Tcp"
+  frontend_port                  = 80
+  backend_port                   = 80
+  frontend_ip_configuration_name = "PrivateIPAddress2"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.V2bpepool3.id
+  probe_id = azurerm_lb_probe.V2HealthProbe3.id
 }
 resource "azurerm_lb_probe" "V2HealthProbe3" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V2BusinesstoSQLLB2.id
   name                = "http-probe"
-  protocol            = "Http"
-  request_path        = "/health"
+  //protocol            = "Http"
+  //request_path        = "/health"
   port                = 80
 }
-
-
-
-
-#------------------------------
-#SQL Server Always On 1 in VNet1 (add LRS)
-#------------------------------
-
-/*resource "azurerm_subnet_network_security_group_association" "example" {
-  subnet_id                 = Module.Network.VNet1subnetsql.id
-  network_security_group_id = azurerm_network_security_group.example.id
-}
-
-resource "azurerm_network_security_group" "example" {
-  name                = "${var.prefix}-NSG"
-  location            = azurerm_resource_group.RG.location
-  resource_group_name = azurerm_resource_group.RG.name
-}
-
-resource "azurerm_network_security_rule" "RDPRule" {
-  name                        = "RDPRule"
-  resource_group_name         = azurerm_resource_group.RG.name
-  priority                    = 1000
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = 3389
-  source_address_prefix       = "167.220.255.0/25"
-  destination_address_prefix  = "*"
-  network_security_group_name = azurerm_network_security_group.example.name
-}
-
-resource "azurerm_network_security_rule" "MSSQLRule" {
-  name                        = "MSSQLRule"
-  resource_group_name         = azurerm_resource_group.RG.name
-  priority                    = 1001
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = 1433
-  source_address_prefix       = "167.220.255.0/25"
-  destination_address_prefix  = "*"
-  network_security_group_name = azurerm_network_security_group.example.name
-}
 */
 
-resource "azurerm_network_interface" "sqlnic1" {
-  name                = "sqlservernic1"
-  location            = var.location1
-  resource_group_name = azurerm_resource_group.RG.name
-
-  ip_configuration {
-    name                          = "sqlipconfiguration1"
-    subnet_id                     = module.Network.v1subnetsql.id
-    private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.4.7"
-  }
-}
-
-/*
-resource "azurerm_network_interface_security_group_association" "example" {
-  network_interface_id      = azurerm_network_interface.example.id
-  network_security_group_id = azurerm_network_security_group.example.id
-}
-*/
-
-resource "azurerm_availability_set" "avs1" {
-  name                = "avs1-aset"
-  location            = azurerm_resource_group.RG.location
-  resource_group_name = azurerm_resource_group.RG.name
-}
-
-resource "azurerm_virtual_machine" "sqlvm1" {
-  name                  = "sqlservervm1"
-  location              = var.location1
-  resource_group_name   = azurerm_resource_group.RG.name
-  network_interface_ids = [azurerm_network_interface.sqlnic1.id]
-  vm_size               = "Standard_B2s"
-  availability_set_id = azurerm_availability_set.avs1.id
-
-  storage_image_reference {
-    publisher = "MicrosoftSQLServer"
-    offer     = "SQL2017-WS2016"
-    sku       = "SQLDEV"
-    version   = "latest"
-  }
-
-  storage_os_disk {
-    name              = "team8sqlstorage1-OSDisk"
-    caching           = "ReadOnly"
-    create_option     = "FromImage"
-    managed_disk_type = "Premium_LRS"
-  }
-
-  os_profile {
-    computer_name  = "sqlservervm"
-    admin_username = "azureuser"
-    admin_password = "Adminpassword*"
-  }
-
-  os_profile_windows_config {
-    timezone                  = "Eastern Standard Time"
-    provision_vm_agent        = true
-    enable_automatic_upgrades = true
-  }
-}
-
-
-#------------------------------
-#SQL Server Always On #2 in Vnet1
-#------------------------------
-
-resource "azurerm_network_interface" "sqlnic2" {
-  name                = "sqlservernic2"
-  location            = var.location1
-  resource_group_name = azurerm_resource_group.RG.name
-
-  ip_configuration {
-    name                          = "sqlipconfiguration2"
-    subnet_id                     = module.Network.v1subnetsql.id
-    private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.4.8"
-  }
-}
-
-resource "azurerm_virtual_machine" "sqlvm2" {
-  name                  = "sqlservervm2"
-  location              = var.location1
-  resource_group_name   = azurerm_resource_group.RG.name
-  network_interface_ids = [azurerm_network_interface.sqlnic2.id]
-  vm_size               = "Standard_B2s"
-  availability_set_id = azurerm_availability_set.avs1.id
-
-  storage_image_reference {
-    publisher = "MicrosoftSQLServer"
-    offer     = "SQL2017-WS2016"
-    sku       = "SQLDEV"
-    version   = "latest"
-  }
-
-  storage_os_disk {
-    name              = "team8sqlstorage2-OSDisk"
-    caching           = "ReadOnly"
-    create_option     = "FromImage"
-    managed_disk_type = "Premium_LRS"
-  }
-
-  os_profile {
-    computer_name  = "sqlservervm"
-    admin_username = "azureuser"
-    admin_password = "Adminpassword*"
-  }
-
-  os_profile_windows_config {
-    timezone                  = "Eastern Standard Time"
-    provision_vm_agent        = true
-    enable_automatic_upgrades = true
-  }
-  
-}
 
 
 
-#------------------------------
-#SQL Server Always On 1 in VNet2 (add LRS)
-#------------------------------
-
-/*resource "azurerm_subnet_network_security_group_association" "example" {
-  subnet_id                 = Module.Network.VNet1subnetsql.id
-  network_security_group_id = azurerm_network_security_group.example.id
-}
-
-resource "azurerm_network_security_group" "example" {
-  name                = "${var.prefix}-NSG"
-  location            = azurerm_resource_group.RG.location
-  resource_group_name = azurerm_resource_group.RG.name
-}
-
-resource "azurerm_network_security_rule" "RDPRule" {
-  name                        = "RDPRule"
-  resource_group_name         = azurerm_resource_group.RG.name
-  priority                    = 1000
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = 3389
-  source_address_prefix       = "167.220.255.0/25"
-  destination_address_prefix  = "*"
-  network_security_group_name = azurerm_network_security_group.example.name
-}
-
-resource "azurerm_network_security_rule" "MSSQLRule" {
-  name                        = "MSSQLRule"
-  resource_group_name         = azurerm_resource_group.RG.name
-  priority                    = 1001
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = 1433
-  source_address_prefix       = "167.220.255.0/25"
-  destination_address_prefix  = "*"
-  network_security_group_name = azurerm_network_security_group.example.name
-}
-*/
-
-resource "azurerm_network_interface" "sqlnic3" {
-  name                = "sqlservernic3"
-  location            = var.location2
-  resource_group_name = azurerm_resource_group.RG.name
-
-  ip_configuration {
-    name                          = "sqlipconfiguration1"
-    subnet_id                     = module.Network.v2subnetsql.id
-    private_ip_address_allocation = "Static"
-    private_ip_address            = "10.1.4.7"
-  }
-}
-
-
-/*
-resource "azurerm_network_interface_security_group_association" "example" {
-  network_interface_id      = azurerm_network_interface.example.id
-  network_security_group_id = azurerm_network_security_group.example.id
-}
-*/
-
-resource "azurerm_availability_set" "avs2" {
-  name                = "avs2-aset"
-  location            = var.location2
-  resource_group_name = azurerm_resource_group.RG.name
-}
-
-resource "azurerm_virtual_machine" "sqlvm3" {
-  name                  = "sqlservervm3"
-  location              = var.location2
-  resource_group_name   = azurerm_resource_group.RG.name
-  network_interface_ids = [azurerm_network_interface.sqlnic3.id]
-  vm_size               = "Standard_B2s"
-  availability_set_id = azurerm_availability_set.avs2.id
-
-  storage_image_reference {
-    publisher = "MicrosoftSQLServer"
-    offer     = "SQL2017-WS2016"
-    sku       = "SQLDEV"
-    version   = "latest"
-  }
-
-  storage_os_disk {
-    name              = "team8sqlstorage3-OSDisk"
-    caching           = "ReadOnly"
-    create_option     = "FromImage"
-    managed_disk_type = "Premium_LRS"
-  }
-
-  os_profile {
-    computer_name  = "sqlservervm"
-    admin_username = "azureuser"
-    admin_password = "Adminpassword*"
-  }
-
-  os_profile_windows_config {
-    timezone                  = "Eastern Standard Time"
-    provision_vm_agent        = true
-    enable_automatic_upgrades = true
-  }
-}
-
-
-#------------------------------
-#SQL Server Always On #2 in Vnet2
-#------------------------------
-
-resource "azurerm_network_interface" "sqlnic4" {
-  name                = "sqlservernic4"
-  location            = var.location2
-  resource_group_name = azurerm_resource_group.RG.name
-
-  ip_configuration {
-    name                          = "sqlipconfiguration4"
-    subnet_id                     = module.Network.v2subnetsql.id
-    private_ip_address_allocation = "Static"
-    private_ip_address            = "10.1.4.8"
-  }
-}
-
-resource "azurerm_virtual_machine" "sqlvm4" {
-  name                  = "sqlservervm4"
-  location              = var.location2
-  resource_group_name   = azurerm_resource_group.RG.name
-  network_interface_ids = [azurerm_network_interface.sqlnic4.id]
-  vm_size               = "Standard_B2s"
-  availability_set_id = azurerm_availability_set.avs2.id
-
-  storage_image_reference {
-    publisher = "MicrosoftSQLServer"
-    offer     = "SQL2017-WS2016"
-    sku       = "SQLDEV"
-    version   = "latest"
-  }
-
-  storage_os_disk {
-    name              = "team8sqlstorage4-OSDisk"
-    caching           = "ReadOnly"
-    create_option     = "FromImage"
-    managed_disk_type = "Premium_LRS"
-  }
-
-  os_profile {
-    computer_name  = "sqlservervm"
-    admin_username = "azureuser"
-    admin_password = "Adminpassword*"
-  }
-
-  os_profile_windows_config {
-    timezone                  = "Eastern Standard Time"
-    provision_vm_agent        = true
-    enable_automatic_upgrades = true
-  }
-
-}
 
 
 
@@ -856,10 +525,13 @@ resource "azurerm_app_service_plan" "appserviceplan1" {
   name                = "appservice1"
   location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
+  kind                = "Linux"
+  reserved            = true
 
   sku {
     tier = "Standard"
     size = "S1"
+    capacity = "3"
   }
 }
 
@@ -870,19 +542,25 @@ resource "azurerm_app_service" "appservice1" {
   app_service_plan_id = azurerm_app_service_plan.appserviceplan1.id
 
   site_config {
-    dotnet_framework_version = "v4.0"
-    scm_type                 = "LocalGit"
+    app_command_line = ""
+    linux_fx_version = "DOCKER|mbecoate/movie_app:latest"
+    health_check_path = "/health"
   }
 
   app_settings = {
     "SOME_KEY" = "some-value"
-  }
 
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    "DOCKER_REGISTRY_SERVER_URL"          = "https://index.docker.io"
+  
+  }
+/*
   connection_string {
     name  = "Database"
     type  = "SQLServer"
     value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
   }
+  */
 }
 
 
@@ -896,10 +574,13 @@ resource "azurerm_app_service_plan" "appserviceplan2" {
   name                = "appservice2"
   location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
+  kind                = "Linux"
+  reserved            = true
 
   sku {
     tier = "Standard"
     size = "S1"
+    capacity = "3"
   }
 }
 
@@ -910,19 +591,26 @@ resource "azurerm_app_service" "appservice2" {
   app_service_plan_id = azurerm_app_service_plan.appserviceplan2.id
 
   site_config {
-    dotnet_framework_version = "v4.0"
-    scm_type                 = "LocalGit"
+    app_command_line = ""
+    linux_fx_version = "DOCKER|mbecoate/movie_app:latest"
+    health_check_path = "/health"
   }
 
   app_settings = {
     "SOME_KEY" = "some-value"
+    
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    "DOCKER_REGISTRY_SERVER_URL"          = "https://index.docker.io"
+    
   }
-
+/*
   connection_string {
     name  = "Database"
     type  = "SQLServer"
     value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
   }
+  */
+
 }
 
 
@@ -981,13 +669,14 @@ resource "azurerm_application_gateway" "vappgateway1" {
   backend_address_pool {
     name = local.backend_address_pool_name
     fqdns = ["${azurerm_app_service.appservice1.name}.azurewebsites.net"]
-    ip_addresses = []
   }
 
   backend_http_settings {
     name                  = local.http_setting_name
+    pick_host_name_from_backend_address = true
+    probe_name = "p1"
     cookie_based_affinity = "Disabled"
-    path                  = "/path1/"
+    path                  = "/"
     port                  = 80
     protocol              = "Http"
     request_timeout       = 60
@@ -998,6 +687,7 @@ resource "azurerm_application_gateway" "vappgateway1" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Http"
+    //host_name = "${azurerm_app_service.appservice2.name}.azurewebsites.net"
   }
 
   request_routing_rule {
@@ -1006,6 +696,19 @@ resource "azurerm_application_gateway" "vappgateway1" {
     http_listener_name         = local.listener_name
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
+  }
+
+  probe {
+    name = "p1"
+    interval = 30
+    protocol = "Http"
+    path = "/"
+    timeout = 60
+    unhealthy_threshold = 3
+    pick_host_name_from_backend_http_settings = true
+    match {
+      status_code = [200, 399, 404]
+    }
   }
 }
 
@@ -1070,8 +773,10 @@ resource "azurerm_application_gateway" "vappgateway2" {
 
   backend_http_settings {
     name                  = local.http_setting_name2
+    pick_host_name_from_backend_address = true
+    probe_name = "p2"
     cookie_based_affinity = "Disabled"
-    path                  = "/path1/"
+    path                  = "/"
     port                  = 80
     protocol              = "Http"
     request_timeout       = 60
@@ -1082,6 +787,7 @@ resource "azurerm_application_gateway" "vappgateway2" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name2
     frontend_port_name             = local.frontend_port_name2
     protocol                       = "Http"
+    //host_name = "${azurerm_app_service.appservice2.name}.azurewebsites.net"
   }
 
   request_routing_rule {
@@ -1091,4 +797,255 @@ resource "azurerm_application_gateway" "vappgateway2" {
     backend_address_pool_name  = local.backend_address_pool_name2
     backend_http_settings_name = local.http_setting_name2
   }
+
+  probe {
+    name = "p2"
+    interval = 30
+    protocol = "Http"
+    path = "/"
+    timeout = 60
+    unhealthy_threshold = 3
+    pick_host_name_from_backend_http_settings = true
+    match {
+      status_code = [200, 399, 404]
+    }
+  }
+
 }
+
+
+
+
+
+
+#New SQL SERVER
+resource "azurerm_sql_server" "primary_sql_server" {
+  name                         = "vnet1-sql-primary"
+  resource_group_name          = azurerm_resource_group.RG.name
+  location                     = var.location1
+  version                      = "12.0"
+  administrator_login          = "azureuser"
+  administrator_login_password = "Adminpassword*"
+}
+
+resource "azurerm_sql_server" "secondary" {
+  name                         = "vnet2-sql-secondary"
+  resource_group_name          = azurerm_resource_group.RG.name
+  location                     = var.location2
+  version                      = "12.0"
+  administrator_login          = "azureuser"
+  administrator_login_password = "Adminpassword*"
+}
+
+resource "azurerm_sql_database" "db1" {
+  name                = "t8p2-db1"
+  resource_group_name = azurerm_resource_group.RG.name
+  location            = var.location1
+  server_name         = azurerm_sql_server.primary_sql_server.name
+}
+
+resource "azurerm_sql_failover_group" "fallover_group" {
+  name                = "t8p2-failover-group"
+  resource_group_name = azurerm_sql_server.primary_sql_server.resource_group_name
+  server_name         = azurerm_sql_server.primary_sql_server.name
+  databases           = [azurerm_sql_database.db1.id]
+  partner_servers {
+    id = azurerm_sql_server.secondary.id
+  }
+
+  read_write_endpoint_failover_policy {
+    mode          = "Automatic"
+    grace_minutes = 60
+  }
+}
+
+
+#------------------------------
+#Virtual Application Gateway for sql1 in Vnet1 
+#------------------------------
+
+
+
+#&nbsp;since these variables are re-used - a locals block makes this more maintainable
+locals {
+  backend_address_pool_name3      = "${module.Network.Vnet1.name}-beap2"
+  frontend_port_name3             = "${module.Network.Vnet1.name}-feport2"
+  frontend_ip_configuration_name3 = "${module.Network.Vnet1.name}-feip2"
+  http_setting_name3              = "${module.Network.Vnet1.name}-be-htst2"
+  listener_name3                  = "${module.Network.Vnet1.name}-httplstn2"
+  request_routing_rule_name3      = "${module.Network.Vnet1.name}-rqrt2"
+  redirect_configuration_name3    = "${module.Network.Vnet1.name}-rdrcfg2"
+}
+
+resource "azurerm_application_gateway" "vappgateway3" {
+  name                = "v-appgateway3"
+  resource_group_name = azurerm_resource_group.RG.name
+  location            = var.location1
+
+  sku {
+    name     = "Standard_Small"
+    tier     = "Standard"
+    capacity = 2
+  }
+
+  gateway_ip_configuration {
+    name      = "my-gateway-ip-configuration"
+    subnet_id = module.Network.v1subnetvagbe.id
+  }
+
+  frontend_port {
+    name = local.frontend_port_name3
+    port = 80
+  }
+
+  frontend_ip_configuration {
+    name                 = local.frontend_ip_configuration_name3
+    private_ip_address_allocation = "Static"
+    private_ip_address = "10.0.6.6"
+  }
+
+  backend_address_pool {
+    name = local.backend_address_pool_name2
+    fqdns = ["${azurerm_sql_server.primary_sql_server.name}.database.windows.net"]
+  }
+
+  backend_http_settings {
+    name                  = local.http_setting_name3
+    pick_host_name_from_backend_address = true
+    probe_name = "p3"
+    cookie_based_affinity = "Disabled"
+    path                  = "/"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 60
+  }
+
+  http_listener {
+    name                           = local.listener_name3
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name3
+    frontend_port_name             = local.frontend_port_name3
+    protocol                       = "Http"
+  }
+
+  request_routing_rule {
+    name                       = local.request_routing_rule_name3
+    rule_type                  = "Basic"
+    http_listener_name         = local.listener_name3
+    backend_address_pool_name  = local.backend_address_pool_name3
+    backend_http_settings_name = local.http_setting_name3
+  }
+
+  probe {
+    name = "p3"
+    interval = 30
+    protocol = "Http"
+    path = "/"
+    timeout = 60
+    unhealthy_threshold = 3
+    pick_host_name_from_backend_http_settings = true
+    match {
+      status_code = [200, 399, 404]
+    }
+  }
+
+}
+
+
+#------------------------------
+#Virtual Application Gateway for sql2 in Vnet2 
+#------------------------------
+
+
+
+
+#&nbsp;since these variables are re-used - a locals block makes this more maintainable
+locals {
+  backend_address_pool_name4      = "${module.Network.Vnet2.name}-beap2"
+  frontend_port_name4             = "${module.Network.Vnet2.name}-feport2"
+  frontend_ip_configuration_name4 = "${module.Network.Vnet2.name}-feip2"
+  http_setting_name4              = "${module.Network.Vnet2.name}-be-htst2"
+  listener_name4                 = "${module.Network.Vnet2.name}-httplstn2"
+  request_routing_rule_name4      = "${module.Network.Vnet2.name}-rqrt2"
+  redirect_configuration_name4   = "${module.Network.Vnet2.name}-rdrcfg2"
+}
+
+resource "azurerm_application_gateway" "vappgateway4" {
+  name                = "v-appgateway4"
+  resource_group_name = azurerm_resource_group.RG.name
+  location            = var.location2
+
+  sku {
+    name     = "Standard_Small"
+    tier     = "Standard"
+    capacity = 2
+  }
+
+  gateway_ip_configuration {
+    name      = "my-gateway-ip-configuration"
+    subnet_id = module.Network.v2subnetvagbe.id
+  }
+
+  frontend_port {
+    name = local.frontend_port_name4
+    port = 80
+  }
+
+  frontend_ip_configuration {
+    name                 = local.frontend_ip_configuration_name4
+    private_ip_address_allocation = "Static"
+    private_ip_address = "10.1.6.6"
+  }
+
+  backend_address_pool {
+    name = local.backend_address_pool_name4
+    fqdns = ["${azurerm_sql_server.secondary.name}.database.windows.net"]
+  }
+
+  backend_http_settings {
+    name                  = local.http_setting_name4
+    pick_host_name_from_backend_address = true
+    probe_name = "p4"
+    cookie_based_affinity = "Disabled"
+    path                  = "/"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 60
+  }
+
+  http_listener {
+    name                           = local.listener_name4
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name4
+    frontend_port_name             = local.frontend_port_name4
+    protocol                       = "Http"
+    //host_name = "${azurerm_app_service.appservice2.name}.azurewebsites.net"
+  }
+
+  request_routing_rule {
+    name                       = local.request_routing_rule_name4
+    rule_type                  = "Basic"
+    http_listener_name         = local.listener_name4
+    backend_address_pool_name  = local.backend_address_pool_name4
+    backend_http_settings_name = local.http_setting_name4
+  }
+
+  probe {
+    name = "p4"
+    interval = 30
+    protocol = "Http"
+    path = "/"
+    timeout = 60
+    unhealthy_threshold = 3
+    pick_host_name_from_backend_http_settings = true
+    match {
+      status_code = [200, 399, 404]
+    }
+  }
+
+}
+
+
+
+
+
+
+
