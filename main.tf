@@ -204,7 +204,7 @@ resource "azurerm_lb_probe" "V1HealthProbe2" {
   port                = 80
 }
 
-
+/*
 #We want to make our Load Balancer Internal (Private) to go to our SQL database
 resource "azurerm_lb" "V1BusinesstoSQLLB2" {
   name                = "V1BSQlLB2"
@@ -281,7 +281,7 @@ resource "azurerm_lb_probe" "V1HealthProbe3" {
   //request_path        = "/health"
   port                = 80
 }
-
+*/
 
 
 
@@ -432,7 +432,7 @@ resource "azurerm_lb_probe" "V2HealthProbe2" {
   port                = 80
 }
 
-
+/*
 #We want to make our Load Balancer Internal (Private) to go to our SQL database
 resource "azurerm_lb" "V2BusinesstoSQLLB2" {
   name                = "V2BSQlLB2"
@@ -509,7 +509,7 @@ resource "azurerm_lb_probe" "V2HealthProbe3" {
   //request_path        = "/health"
   port                = 80
 }
-
+*/
 
 
 
@@ -860,8 +860,188 @@ resource "azurerm_sql_failover_group" "fallover_group" {
 }
 
 
+#------------------------------
+#Virtual Application Gateway for sql1 in Vnet1 
+#------------------------------
 
 
+
+#&nbsp;since these variables are re-used - a locals block makes this more maintainable
+locals {
+  backend_address_pool_name3      = "${module.Network.Vnet1.name}-beap2"
+  frontend_port_name3             = "${module.Network.Vnet1.name}-feport2"
+  frontend_ip_configuration_name3 = "${module.Network.Vnet1.name}-feip2"
+  http_setting_name3              = "${module.Network.Vnet1.name}-be-htst2"
+  listener_name3                  = "${module.Network.Vnet1.name}-httplstn2"
+  request_routing_rule_name3      = "${module.Network.Vnet1.name}-rqrt2"
+  redirect_configuration_name3    = "${module.Network.Vnet1.name}-rdrcfg2"
+}
+
+resource "azurerm_application_gateway" "vappgateway3" {
+  name                = "v-appgateway3"
+  resource_group_name = azurerm_resource_group.RG.name
+  location            = var.location1
+
+  sku {
+    name     = "Standard_Small"
+    tier     = "Standard"
+    capacity = 2
+  }
+
+  gateway_ip_configuration {
+    name      = "my-gateway-ip-configuration"
+    subnet_id = module.Network.v1subnetvagbe.id
+  }
+
+  frontend_port {
+    name = local.frontend_port_name3
+    port = 80
+  }
+
+  frontend_ip_configuration {
+    name                 = local.frontend_ip_configuration_name3
+    private_ip_address_allocation = "Static"
+    private_ip_address = "10.0.6.6"
+  }
+
+  backend_address_pool {
+    name = local.backend_address_pool_name2
+    fqdns = ["${azurerm_sql_server.primary_sql_server.name}.database.windows.net"]
+  }
+
+  backend_http_settings {
+    name                  = local.http_setting_name3
+    pick_host_name_from_backend_address = true
+    probe_name = "p3"
+    cookie_based_affinity = "Disabled"
+    path                  = "/"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 60
+  }
+
+  http_listener {
+    name                           = local.listener_name3
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name3
+    frontend_port_name             = local.frontend_port_name3
+    protocol                       = "Http"
+  }
+
+  request_routing_rule {
+    name                       = local.request_routing_rule_name3
+    rule_type                  = "Basic"
+    http_listener_name         = local.listener_name3
+    backend_address_pool_name  = local.backend_address_pool_name3
+    backend_http_settings_name = local.http_setting_name3
+  }
+
+  probe {
+    name = "p3"
+    interval = 30
+    protocol = "Http"
+    path = "/"
+    timeout = 60
+    unhealthy_threshold = 3
+    pick_host_name_from_backend_http_settings = true
+    match {
+      status_code = [200, 399, 404]
+    }
+  }
+
+}
+
+
+#------------------------------
+#Virtual Application Gateway for sql2 in Vnet2 
+#------------------------------
+
+
+
+
+#&nbsp;since these variables are re-used - a locals block makes this more maintainable
+locals {
+  backend_address_pool_name4      = "${module.Network.Vnet2.name}-beap2"
+  frontend_port_name4             = "${module.Network.Vnet2.name}-feport2"
+  frontend_ip_configuration_name4 = "${module.Network.Vnet2.name}-feip2"
+  http_setting_name4              = "${module.Network.Vnet2.name}-be-htst2"
+  listener_name4                 = "${module.Network.Vnet2.name}-httplstn2"
+  request_routing_rule_name4      = "${module.Network.Vnet2.name}-rqrt2"
+  redirect_configuration_name4   = "${module.Network.Vnet2.name}-rdrcfg2"
+}
+
+resource "azurerm_application_gateway" "vappgateway4" {
+  name                = "v-appgateway4"
+  resource_group_name = azurerm_resource_group.RG.name
+  location            = var.location2
+
+  sku {
+    name     = "Standard_Small"
+    tier     = "Standard"
+    capacity = 2
+  }
+
+  gateway_ip_configuration {
+    name      = "my-gateway-ip-configuration"
+    subnet_id = module.Network.v2subnetvagbe.id
+  }
+
+  frontend_port {
+    name = local.frontend_port_name4
+    port = 80
+  }
+
+  frontend_ip_configuration {
+    name                 = local.frontend_ip_configuration_name4
+    pprivate_ip_address_allocation = "Static"
+    private_ip_address = "10.1.6.6"
+  }
+
+  backend_address_pool {
+    name = local.backend_address_pool_name4
+    fqdns = ["${azurerm_sql_server.secondary.name}.database.windows.net"]
+  }
+
+  backend_http_settings {
+    name                  = local.http_setting_name4
+    pick_host_name_from_backend_address = true
+    probe_name = "p4"
+    cookie_based_affinity = "Disabled"
+    path                  = "/"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 60
+  }
+
+  http_listener {
+    name                           = local.listener_name4
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name4
+    frontend_port_name             = local.frontend_port_name4
+    protocol                       = "Http"
+    //host_name = "${azurerm_app_service.appservice2.name}.azurewebsites.net"
+  }
+
+  request_routing_rule {
+    name                       = local.request_routing_rule_name4
+    rule_type                  = "Basic"
+    http_listener_name         = local.listener_name4
+    backend_address_pool_name  = local.backend_address_pool_name4
+    backend_http_settings_name = local.http_setting_name4
+  }
+
+  probe {
+    name = "p4"
+    interval = 30
+    protocol = "Http"
+    path = "/"
+    timeout = 60
+    unhealthy_threshold = 3
+    pick_host_name_from_backend_http_settings = true
+    match {
+      status_code = [200, 399, 404]
+    }
+  }
+
+}
 
 
 
