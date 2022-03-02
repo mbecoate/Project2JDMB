@@ -311,7 +311,7 @@ resource "azurerm_lb_rule" "V1bustosqllbrule1" {
   backend_port                   = 1433
   frontend_ip_configuration_name = "PrivateIPAddress2"
   backend_address_pool_id = azurerm_lb_backend_address_pool.V1bpepool3.id
-  probe_id = azurerm_lb_probe.V2HealthProbe3.id
+  probe_id = azurerm_lb_probe.V1HealthProbe3.id
 }
 resource "azurerm_lb_rule" "V1bustosqllbrule2" {
   resource_group_name            = azurerm_resource_group.RG.name
@@ -322,7 +322,7 @@ resource "azurerm_lb_rule" "V1bustosqllbrule2" {
   backend_port                   = 22
   frontend_ip_configuration_name = "PrivateIPAddress2"
   backend_address_pool_id = azurerm_lb_backend_address_pool.V1bpepool3.id
-  probe_id = azurerm_lb_probe.V2HealthProbe3.id
+  probe_id = azurerm_lb_probe.V1HealthProbe3.id
 }
 resource "azurerm_lb_rule" "V1bustosqllbrule3" {
   resource_group_name            = azurerm_resource_group.RG.name
@@ -333,7 +333,7 @@ resource "azurerm_lb_rule" "V1bustosqllbrule3" {
   backend_port                   = 80
   frontend_ip_configuration_name = "PrivateIPAddress2"
   backend_address_pool_id = azurerm_lb_backend_address_pool.V1bpepool3.id
-  probe_id = azurerm_lb_probe.V2HealthProbe3.id
+  probe_id = azurerm_lb_probe.V1HealthProbe3.id
 }
 resource "azurerm_lb_probe" "V1HealthProbe3" {
   resource_group_name = azurerm_resource_group.RG.name
