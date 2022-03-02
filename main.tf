@@ -311,6 +311,24 @@ resource "azurerm_lb_rule" "V1bustosqllbrule1" {
   backend_port                   = 1433
   frontend_ip_configuration_name = "PrivateIPAddress2"
 }
+resource "azurerm_lb_rule" "V1bustosqllbrule2" {
+  resource_group_name            = azurerm_resource_group.RG.name
+  loadbalancer_id                = azurerm_lb.V1BusinesstoSQLLB2.id
+  name                           = "ssh"
+  protocol                       = "Tcp"
+  frontend_port                  = 22
+  backend_port                   = 22
+  frontend_ip_configuration_name = "PrivateIPAddress2"
+}
+resource "azurerm_lb_rule" "V1bustosqllbrule3" {
+  resource_group_name            = azurerm_resource_group.RG.name
+  loadbalancer_id                = azurerm_lb.V1BusinesstoSQLLB2.id
+  name                           = "web"
+  protocol                       = "Tcp"
+  frontend_port                  = 80
+  backend_port                   = 80
+  frontend_ip_configuration_name = "PrivateIPAddress2"
+}
 resource "azurerm_lb_probe" "V1HealthProbe3" {
   resource_group_name = azurerm_resource_group.RG.name
   loadbalancer_id     = azurerm_lb.V1BusinesstoSQLLB2.id
@@ -513,6 +531,24 @@ resource "azurerm_lb_rule" "V2bustosqllbrule1" {
   protocol                       = "Tcp"
   frontend_port                  = 1433
   backend_port                   = 1433
+  frontend_ip_configuration_name = "PrivateIPAddress2"
+}
+resource "azurerm_lb_rule" "V2bustosqllbrule2" {
+  resource_group_name            = azurerm_resource_group.RG.name
+  loadbalancer_id                = azurerm_lb.V2BusinesstoSQLLB2.id
+  name                           = "ssh"
+  protocol                       = "Tcp"
+  frontend_port                  = 22
+  backend_port                   = 22
+  frontend_ip_configuration_name = "PrivateIPAddress2"
+}
+resource "azurerm_lb_rule" "V2bustosqllbrule3" {
+  resource_group_name            = azurerm_resource_group.RG.name
+  loadbalancer_id                = azurerm_lb.V2BusinesstoSQLLB2.id
+  name                           = "web"
+  protocol                       = "Tcp"
+  frontend_port                  = 80
+  backend_port                   = 80
   frontend_ip_configuration_name = "PrivateIPAddress2"
 }
 resource "azurerm_lb_probe" "V2HealthProbe3" {
@@ -850,10 +886,36 @@ resource "azurerm_virtual_machine" "sqlvm4" {
 
 
 
+
+#test online module
+module "web_app_container1" {
+  source = "innovationnorway/web-app-container/azurerm"
+
+  name = "app-service1"
+
+  resource_group_name = azurerm_resource_group.RG.name
+
+  container_type = "docker"
+
+  container_image = "innovationnorway/go-hello-world:latest"
+}
+module "web_app_container2" {
+  source = "innovationnorway/web-app-container/azurerm"
+
+  name = "app-service2"
+
+  resource_group_name = azurerm_resource_group.RG.name
+
+  container_type = "docker"
+
+  container_image = "innovationnorway/go-hello-world:latest"
+}
+
+
 #----------------------------
 #App Service 1
 #----------------------------
-
+/*
 resource "azurerm_app_service_plan" "appserviceplan1" {
   name                = "appservice1"
   location            = var.location1
@@ -926,7 +988,7 @@ resource "azurerm_app_service" "appservice2" {
     value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
   }
 }
-
+*/
 
 
 #------------------------------
@@ -982,7 +1044,7 @@ resource "azurerm_application_gateway" "vappgateway1" {
 
   backend_address_pool {
     name = local.backend_address_pool_name
-    fqdns = ["${azurerm_app_service.appservice1.name}.azurewebsites.net"]
+    fqdns = ["app-service1.azurewebsites.net"]
   }
 
   backend_http_settings {
@@ -1001,7 +1063,7 @@ resource "azurerm_application_gateway" "vappgateway1" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Http"
-    host_name = "${azurerm_app_service.appservice1.name}.azurewebsites.net"
+    host_name = "app-service1.azurewebsites.net"
   }
 
   request_routing_rule {
@@ -1082,7 +1144,7 @@ resource "azurerm_application_gateway" "vappgateway2" {
 
   backend_address_pool {
     name = local.backend_address_pool_name2
-    fqdns = ["${azurerm_app_service.appservice2.name}.azurewebsites.net"]
+    fqdns = ["app-service2.azurewebsites.net"]
   }
 
   backend_http_settings {
@@ -1101,7 +1163,7 @@ resource "azurerm_application_gateway" "vappgateway2" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name2
     frontend_port_name             = local.frontend_port_name2
     protocol                       = "Http"
-    host_name = "${azurerm_app_service.appservice1.name}.azurewebsites.net"
+    host_name = "app-service2.azurewebsites.net"
   }
 
   request_routing_rule {
