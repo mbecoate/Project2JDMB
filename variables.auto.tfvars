@@ -7,7 +7,7 @@ tags = {
 
 
 #resource group variables
-rg_name  = "Team8_Project2"
+rg_name  = "Team8_Project2_1"
 location1 = "eastus"
 location2 = "centralus"
 
