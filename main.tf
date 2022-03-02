@@ -1015,11 +1015,11 @@ resource "azurerm_application_gateway" "vappgateway1" {
   probe {
     name = "p1"
     interval = 30
-    protocprotocol = "Http"
+    protocol = "Http"
     path = "/*"
     timeout = 60
     unhealthy_threshold = 3
-    pickpick_host_name_from_backend_http_settings = true
+    pick_host_name_from_backend_http_settings = true
     match {
       status_code = [200, 399, 404]
     }
@@ -1115,11 +1115,11 @@ resource "azurerm_application_gateway" "vappgateway2" {
   probe {
     name = "p2"
     interval = 30
-    protocprotocol = "Http"
+    protocol = "Http"
     path = "/*"
     timeout = 60
     unhealthy_threshold = 3
-    pickpick_host_name_from_backend_http_settings = true
+    pick_host_name_from_backend_http_settings = true
     match {
       status_code = [200, 399, 404]
     }
