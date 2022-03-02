@@ -906,7 +906,7 @@ resource "azurerm_application_gateway" "vappgateway3" {
   }
 
   backend_address_pool {
-    name = local.backend_address_pool_name2
+    name = local.backend_address_pool_name3
     fqdns = ["${azurerm_sql_server.primary_sql_server.name}.database.windows.net"]
   }
 
