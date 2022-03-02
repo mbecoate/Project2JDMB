@@ -926,7 +926,7 @@ resource "azurerm_app_service" "appservice1" {
 
   site_config {
     app_command_line = ""
-    linux_fx_version = "DOCKER|appsvcsample/python-helloworld:latest"
+    linux_fx_version = "DOCKER|mbecoate/movie_app:latest"
     health_check_path = "/health"
   }
 
