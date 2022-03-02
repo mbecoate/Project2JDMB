@@ -992,7 +992,7 @@ resource "azurerm_application_gateway" "vappgateway4" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name4
-    pprivate_ip_address_allocation = "Static"
+    private_ip_address_allocation = "Static"
     private_ip_address = "10.1.6.6"
   }
 
