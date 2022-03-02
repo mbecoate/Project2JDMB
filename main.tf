@@ -988,7 +988,7 @@ resource "azurerm_application_gateway" "vappgateway1" {
   backend_http_settings {
     name                  = local.http_setting_name
     pick_host_name_from_backend_address = true
-    probe_name = "healthprobe1"
+    probe_name = "p1"
     cookie_based_affinity = "Disabled"
     path                  = "/*"
     port                  = 80
@@ -1088,7 +1088,7 @@ resource "azurerm_application_gateway" "vappgateway2" {
   backend_http_settings {
     name                  = local.http_setting_name2
     pick_host_name_from_backend_address = true
-    probe_name = "healthprobe2"
+    probe_name = "p2"
     cookie_based_affinity = "Disabled"
     path                  = "/*"
     port                  = 80
