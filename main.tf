@@ -988,8 +988,9 @@ resource "azurerm_application_gateway" "vappgateway1" {
   backend_http_settings {
     name                  = local.http_setting_name
     pick_host_name_from_backend_address = true
+    probe_name = "healthprobe1"
     cookie_based_affinity = "Disabled"
-    path                  = "/path1/"
+    path                  = "/*"
     port                  = 80
     protocol              = "Http"
     request_timeout       = 60
@@ -1009,6 +1010,19 @@ resource "azurerm_application_gateway" "vappgateway1" {
     http_listener_name         = local.listener_name
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
+  }
+
+  probe {
+    name = "p1"
+    interval = 30
+    protocprotocol = "Http"
+    path = "/*"
+    timeout = 60
+    unhealthy_threshold = 3
+    pickpick_host_name_from_backend_http_settings = true
+    match {
+      status_code = [200, 399, 404]
+    }
   }
 }
 
@@ -1074,8 +1088,9 @@ resource "azurerm_application_gateway" "vappgateway2" {
   backend_http_settings {
     name                  = local.http_setting_name2
     pick_host_name_from_backend_address = true
+    probe_name = "healthprobe2"
     cookie_based_affinity = "Disabled"
-    path                  = "/path1/"
+    path                  = "/*"
     port                  = 80
     protocol              = "Http"
     request_timeout       = 60
@@ -1096,4 +1111,22 @@ resource "azurerm_application_gateway" "vappgateway2" {
     backend_address_pool_name  = local.backend_address_pool_name2
     backend_http_settings_name = local.http_setting_name2
   }
+
+  probe {
+    name = "p2"
+    interval = 30
+    protocprotocol = "Http"
+    path = "/*"
+    timeout = 60
+    unhealthy_threshold = 3
+    pickpick_host_name_from_backend_http_settings = true
+    match {
+      status_code = [200, 399, 404]
+    }
+  }
+
 }
+
+
+
+
