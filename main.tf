@@ -887,43 +887,22 @@ resource "azurerm_virtual_machine" "sqlvm4" {
 
 
 
-#test online module
-module "web_app_container1" {
-  source = "innovationnorway/web-app-container/azurerm"
-
-  name = "app-service1"
-
-  resource_group_name = azurerm_resource_group.RG.name
-
-  container_type = "docker"
-
-  container_image = "innovationnorway/go-hello-world:latest"
-}
-module "web_app_container2" {
-  source = "innovationnorway/web-app-container/azurerm"
-
-  name = "app-service2"
-
-  resource_group_name = azurerm_resource_group.RG.name
-
-  container_type = "docker"
-
-  container_image = "innovationnorway/go-hello-world:latest"
-}
-
 
 #----------------------------
 #App Service 1
 #----------------------------
-/*
+
 resource "azurerm_app_service_plan" "appserviceplan1" {
   name                = "appservice1"
   location            = var.location1
   resource_group_name = azurerm_resource_group.RG.name
+  kind                = "Linux"
+  reserved            = true
 
   sku {
     tier = "Standard"
     size = "S1"
+    capacity = "3"
   }
 }
 
@@ -934,19 +913,25 @@ resource "azurerm_app_service" "appservice1" {
   app_service_plan_id = azurerm_app_service_plan.appserviceplan1.id
 
   site_config {
-    dotnet_framework_version = "v4.0"
-    scm_type                 = "LocalGit"
+    app_command_line = ""
+    linux_fx_version = "DOCKER|appsvcsample/python-helloworld:latest"
+    health_check_path = "/health"
   }
 
   app_settings = {
     "SOME_KEY" = "some-value"
-  }
 
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    "DOCKER_REGISTRY_SERVER_URL"          = "https://index.docker.io"
+  
+  }
+/*
   connection_string {
     name  = "Database"
     type  = "SQLServer"
     value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
   }
+  */
 }
 
 
@@ -960,10 +945,13 @@ resource "azurerm_app_service_plan" "appserviceplan2" {
   name                = "appservice2"
   location            = var.location2
   resource_group_name = azurerm_resource_group.RG.name
+  kind                = "Linux"
+  reserved            = true
 
   sku {
     tier = "Standard"
     size = "S1"
+    capacity = "3"
   }
 }
 
@@ -974,21 +962,28 @@ resource "azurerm_app_service" "appservice2" {
   app_service_plan_id = azurerm_app_service_plan.appserviceplan2.id
 
   site_config {
-    dotnet_framework_version = "v4.0"
-    scm_type                 = "LocalGit"
+    app_command_line = ""
+    linux_fx_version = "DOCKER|mbecoate/movie_app:latest"
+    health_check_path = "/health"
   }
 
   app_settings = {
     "SOME_KEY" = "some-value"
+    
+    "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    "DOCKER_REGISTRY_SERVER_URL"          = "https://index.docker.io"
+    
   }
-
+/*
   connection_string {
     name  = "Database"
     type  = "SQLServer"
     value = "Server=some-server.mydomain.com;Integrated Security=SSPI"
   }
+  */
+
 }
-*/
+
 
 
 #------------------------------
