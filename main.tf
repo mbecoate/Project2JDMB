@@ -859,6 +859,23 @@ resource "azurerm_sql_failover_group" "fallover_group" {
   }
 }
 
+resource "azurerm_sql_virtual_network_rule" "sqlvnetrule" {
+  name = "sql-vnet-rule"
+  resource_group_name = azurerm_resource_group.RG.name
+  server_name = azurerm_sql_server.primary_sql_server.name
+  subnet_id = module.Network.v1subnetbusiness.id
+  ignore_missing_vnet_service_endpoint = false
+  
+}
+
+resource "azurerm_sql_virtual_network_rule" "sqlvnetrule" {
+  name = "sql-vnet-rule"
+  resource_group_name = azurerm_resource_group.RG.name
+  server_name = azurerm_sql_server.secondary.name
+  subnet_id = module.Network.v2subnetbusiness.id
+  ignore_missing_vnet_service_endpoint = false
+  
+}
 
 #------------------------------
 #Virtual Application Gateway for sql1 in Vnet1 
