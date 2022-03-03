@@ -4,6 +4,12 @@ resource "azurerm_resource_group" "RG" {
   tags = var.tags
 }
 
+#minor change add for presentation
+resource "azurerm_resource_group" "RG2" {
+  name     = "Team8Project2_minorchange"
+  location = var.location2
+  tags = var.tags
+}
 
 
 #----------------
