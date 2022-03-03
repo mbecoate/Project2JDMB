@@ -895,12 +895,12 @@ resource "azurerm_application_gateway" "vappgateway3" {
 
   frontend_port {
     name = local.frontend_port_name3
-    port = 80
+    port = 1433
   }
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name3
-    subnet_id = module.Network.v2subnetvagbe.id
+    subnet_id = module.Network.v1subnetvagbe.id
     private_ip_address_allocation = "Static"
     private_ip_address = "10.0.6.6"
   }
@@ -916,7 +916,7 @@ resource "azurerm_application_gateway" "vappgateway3" {
     probe_name = "p3"
     cookie_based_affinity = "Disabled"
     path                  = "/"
-    port                  = 80
+    port                  = 1433
     protocol              = "Http"
     request_timeout       = 60
   }
@@ -988,7 +988,7 @@ resource "azurerm_application_gateway" "vappgateway4" {
 
   frontend_port {
     name = local.frontend_port_name4
-    port = 80
+    port = 1433
   }
 
   frontend_ip_configuration {
@@ -1009,7 +1009,7 @@ resource "azurerm_application_gateway" "vappgateway4" {
     probe_name = "p4"
     cookie_based_affinity = "Disabled"
     path                  = "/"
-    port                  = 80
+    port                  = 1433
     protocol              = "Http"
     request_timeout       = 60
   }
@@ -1019,7 +1019,6 @@ resource "azurerm_application_gateway" "vappgateway4" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name4
     frontend_port_name             = local.frontend_port_name4
     protocol                       = "Http"
-    //host_name = "${azurerm_app_service.appservice2.name}.azurewebsites.net"
   }
 
   request_routing_rule {
