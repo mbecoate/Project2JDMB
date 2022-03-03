@@ -868,7 +868,7 @@ resource "azurerm_sql_virtual_network_rule" "sqlvnetrule" {
   
 }
 
-resource "azurerm_sql_virtual_network_rule" "sqlvnetrule" {
+resource "azurerm_sql_virtual_network_rule" "sqlvnetrule2" {
   name = "sql-vnet-rule"
   resource_group_name = azurerm_resource_group.RG.name
   server_name = azurerm_sql_server.secondary.name
